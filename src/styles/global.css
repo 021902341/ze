@@ -127,3 +127,148 @@ body {
 }
 
 a { color: inherit; }
+
+/* ============================================================
+   正文排版 —— Markdown 渲染结果（用于文章页 .prose 容器）
+   ============================================================ */
+.prose {
+  font-size: 15.5px;
+  line-height: 1.85;
+  color: var(--text-2);
+}
+
+.prose > *:first-child { margin-top: 0; }
+
+.prose h2 {
+  margin: 2.2em 0 .8em;
+  padding-top: .9em;
+  font-size: 22px;
+  font-weight: 750;
+  letter-spacing: -.015em;
+  line-height: 1.4;
+  color: var(--text-1);
+  border-top: 1px solid var(--glass-border);
+}
+
+.prose h3 {
+  margin: 1.8em 0 .6em;
+  font-size: 17.5px;
+  font-weight: 700;
+  line-height: 1.45;
+  color: var(--text-1);
+}
+
+.prose h4 {
+  margin: 1.5em 0 .5em;
+  font-size: 15.5px;
+  font-weight: 700;
+  color: var(--text-1);
+}
+
+.prose p { margin: 0 0 1.15em; }
+
+.prose strong { color: var(--text-1); font-weight: 650; }
+
+.prose a {
+  color: var(--violet);
+  text-decoration: underline;
+  text-decoration-color: rgba(176, 125, 255, .4);
+  text-underline-offset: 3px;
+  transition: color .18s, text-decoration-color .18s;
+}
+
+.prose a:hover {
+  color: var(--magenta);
+  text-decoration-color: var(--magenta);
+}
+
+.prose ul,
+.prose ol {
+  margin: 0 0 1.15em;
+  padding-left: 1.4em;
+}
+
+.prose li { margin-bottom: .5em; }
+.prose li::marker { color: var(--violet); }
+
+.prose blockquote {
+  margin: 1.4em 0;
+  padding: .3em 1.2em;
+  border-left: 3px solid var(--violet);
+  border-radius: 0 10px 10px 0;
+  background: rgba(176, 125, 255, .07);
+  color: var(--text-2);
+}
+
+.prose blockquote p:last-child { margin-bottom: 0; }
+
+.prose code {
+  font-family: var(--font-mono);
+  font-size: .875em;
+  padding: .15em .42em;
+  border-radius: 6px;
+  color: #FFC9DC;
+  background: rgba(255, 46, 120, .12);
+  border: 1px solid rgba(255, 46, 120, .2);
+}
+
+.prose pre {
+  margin: 1.4em 0;
+  padding: 18px 20px;
+  border-radius: 16px;
+  overflow-x: auto;
+  background: rgba(0, 0, 0, .42);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  line-height: 1.65;
+}
+
+.prose pre code {
+  padding: 0;
+  border: none;
+  background: none;
+  color: #E6E1F5;
+  font-size: 13px;
+}
+
+.prose table {
+  width: 100%;
+  margin: 1.4em 0;
+  border-collapse: collapse;
+  font-size: 13.5px;
+  display: block;
+  overflow-x: auto;
+}
+
+.prose th,
+.prose td {
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.prose th {
+  font-weight: 650;
+  color: var(--text-1);
+  background: rgba(255, 255, 255, .04);
+  white-space: nowrap;
+}
+
+.prose tbody tr:hover { background: rgba(255, 255, 255, .025); }
+
+.prose img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 16px;
+  border: 1px solid var(--glass-border);
+}
+
+.prose hr {
+  margin: 2.4em 0;
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
+}
+
+.prose :is(h2, h3, h4) { scroll-margin-top: 90px; }

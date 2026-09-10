@@ -1,0 +1,130 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import PostCard from '../../components/PostCard.astro';
+import { getPosts, countBy } from '../../utils/site';
+
+const posts = await getPosts();
+const categories = countBy(posts.map((p) => p.data.category));
+const allTags = countBy(posts.flatMap((p) => p.data.tags));
+---
+
+<BaseLayout title="博客 · ze" description="技术博客 —— 记录学习、踩坑与建站过程">
+  <SiteHeader />
+
+  <main class="shell">
+    <section class="page-head">
+      <h1 class="grad-text">博客</h1>
+      <p class="sub">
+        共 <b>{posts.length}</b> 篇 · <b>{categories.length}</b> 个分类 ·
+        <b>{allTags.length}</b> 个标签
+      </p>
+    </section>
+
+    <nav class="filters" aria-label="分类筛选">
+      <a class="pill on" href="/blog/">
+        全部 <span class="n">{posts.length}</span>
+      </a>
+      {categories.map(([name, n]) => (
+        <a class="pill" href={`/blog/categories/${encodeURIComponent(name)}/`}>
+          {name} <span class="n">{n}</span>
+        </a>
+      ))}
+    </nav>
+
+    <section class="list">
+      {posts.map((post) => <PostCard post={post} />)}
+    </section>
+
+    {posts.length === 0 && (
+      <p class="empty">还没有文章。往 <code>src/content/blog/</code> 里放 Markdown 就会出现在这里。</p>
+    )}
+  </main>
+</BaseLayout>
+
+<style>
+  .page-head {
+    padding: 34px 0 26px;
+  }
+
+  h1 {
+    margin: 0 0 12px;
+    font-size: clamp(38px, 7vw, 62px);
+    font-weight: 800;
+    letter-spacing: -.035em;
+    line-height: 1.05;
+  }
+
+  .sub {
+    margin: 0;
+    color: var(--text-2);
+    font-size: 14px;
+  }
+
+  .sub b {
+    color: var(--text-1);
+    font-family: var(--font-mono);
+  }
+
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 28px;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 14px;
+    border-radius: 11px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--text-2);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    transition: background .18s, color .18s, border-color .18s, box-shadow .18s;
+  }
+
+  .pill:hover {
+    background: var(--glass-bg-hover);
+    color: var(--text-1);
+    border-color: rgba(176, 125, 255, .42);
+  }
+
+  .pill.on {
+    background: linear-gradient(120deg, rgba(255, 46, 120, .26), rgba(176, 125, 255, .26));
+    border-color: rgba(255, 46, 120, .5);
+    color: #fff;
+    box-shadow: 0 0 22px -6px rgba(255, 46, 120, .6);
+  }
+
+  .pill .n {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    opacity: .65;
+  }
+
+  .list {
+    display: grid;
+    gap: 16px;
+    padding-bottom: 60px;
+  }
+
+  .empty {
+    padding: 60px 0;
+    text-align: center;
+    color: var(--text-3);
+    font-size: 14px;
+  }
+
+  .empty code {
+    font-family: var(--font-mono);
+    background: rgba(255, 255, 255, .06);
+    padding: 2px 7px;
+    border-radius: 5px;
+    color: var(--text-2);
+  }
+</style>

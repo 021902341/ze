@@ -1,0 +1,88 @@
+---
+const nav = [
+  { href: '/', label: '首页' },
+  { href: '/blog/', label: '博客' },
+  { href: '/blog/categories/', label: '分类' },
+  { href: '/blog/tags/', label: '标签' },
+  { href: '/reference-ranking.html', label: '选型榜单' },
+  { href: '/about/', label: '关于' },
+];
+
+const path = Astro.url.pathname;
+
+function active(href: string): boolean {
+  if (href === '/') return path === '/';
+  if (href === '/blog/') {
+    return path.startsWith('/blog/') &&
+      !path.startsWith('/blog/categories') &&
+      !path.startsWith('/blog/tags');
+  }
+  return path === href || path === href.replace(/\/$/, '');
+}
+---
+
+<header class="site-header shell">
+  <a class="brand" href="/">ze</a>
+  <nav>
+    {nav.map((item) => (
+      <a href={item.href} class={active(item.href) ? 'on' : ''}>{item.label}</a>
+    ))}
+  </nav>
+</header>
+
+<style>
+  .site-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    flex-wrap: wrap;
+    padding-top: 26px;
+    padding-bottom: 26px;
+  }
+
+  .brand {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -.03em;
+    text-decoration: none;
+    background: linear-gradient(120deg, #fff 10%, var(--violet) 55%, var(--magenta) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  nav a {
+    padding: 7px 13px;
+    border-radius: 11px;
+    font-size: 13.5px;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--text-2);
+    border: 1px solid transparent;
+    transition: background .18s, color .18s, border-color .18s;
+  }
+
+  nav a:hover {
+    background: var(--glass-bg);
+    color: var(--text-1);
+  }
+
+  nav a.on {
+    background: linear-gradient(120deg, rgba(255, 46, 120, .24), rgba(176, 125, 255, .24));
+    border-color: rgba(255, 46, 120, .46);
+    color: #fff;
+    box-shadow: 0 0 20px -6px rgba(255, 46, 120, .6);
+  }
+
+  @media (max-width: 640px) {
+    .site-header { padding-top: 18px; padding-bottom: 18px; }
+    nav a { padding: 6px 10px; font-size: 12.5px; }
+  }
+</style>

@@ -1,0 +1,188 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+
+const facts = [
+  ['坐标', '天津'],
+  ['状态', '软件工程 · 专升本在读'],
+  ['方向', '前端 / 全栈 · 备考 2027 专升本'],
+  ['在写', 'C 语言专项练习、建站笔记'],
+  ['工具', 'Obsidian（第二大脑）· VS Code · GitHub Desktop'],
+];
+
+const stack = [
+  'HTML / CSS / JavaScript',
+  'Astro',
+  'Vue',
+  'TypeScript',
+  'C',
+  'Node.js',
+  'Cloudflare Workers',
+];
+---
+
+<BaseLayout title="关于 · ze" description="关于我 —— 软件工程专升本，天津">
+  <SiteHeader />
+
+  <main class="shell">
+    <section class="page-head">
+      <h1 class="grad-text">关于</h1>
+      <p class="sub">这里放一些自我介绍和这个站的技术说明。</p>
+    </section>
+
+    <section class="cards">
+      <article class="card glass">
+        <h2>我是谁</h2>
+        <p>
+          专科应届，正在准备专升本的软件工程方向。平时把学到的东西往这个站里丢，
+          算是给自己的一个交代 —— 学没学会，写出来才知道。
+        </p>
+        <ul class="facts">
+          {facts.map(([k, v]) => (
+            <li>
+              <span class="k">{k}</span>
+              <span class="v">{v}</span>
+            </li>
+          ))}
+        </ul>
+      </article>
+
+      <article class="card glass">
+        <h2>技术栈</h2>
+        <p>在学和在用的，谈不上精通，够用就行。</p>
+        <div class="stack">
+          {stack.map((s) => <span class="tech">{s}</span>)}
+        </div>
+      </article>
+
+      <article class="card glass">
+        <h2>这个站</h2>
+        <p>
+          纯静态站点，没有任何服务器。内容用 Markdown 写，构建成静态 HTML，
+          同一份代码部署到海外和国内两个平台。
+        </p>
+        <ul class="facts">
+          <li><span class="k">框架</span><span class="v">Astro 7</span></li>
+          <li><span class="k">样式</span><span class="v">Tailwind 4 + 原生 CSS</span></li>
+          <li><span class="k">内容</span><span class="v">Markdown + Content Collections</span></li>
+          <li><span class="k">写作</span><span class="v">Obsidian</span></li>
+          <li><span class="k">部署</span><span class="v">静态托管 · 海内外双站</span></li>
+        </ul>
+      </article>
+
+      <article class="card glass">
+        <h2>找到我</h2>
+        <p>主要活动在两个地方：</p>
+        <ul class="links">
+          <li>
+            <a href="https://github.com/021902341" target="_blank" rel="noopener">
+              <span class="k">GitHub</span>
+              <span class="v">@021902341 →</span>
+            </a>
+          </li>
+          <li>
+            <a href="/reference-ranking.html">
+              <span class="k">建站选型榜单</span>
+              <span class="v">82 个高星项目 →</span>
+            </a>
+          </li>
+        </ul>
+      </article>
+    </section>
+  </main>
+</BaseLayout>
+
+<style>
+  .page-head { padding: 34px 0 30px; }
+
+  h1 {
+    margin: 0 0 12px;
+    font-size: clamp(38px, 7vw, 62px);
+    font-weight: 800;
+    letter-spacing: -.035em;
+    line-height: 1.05;
+  }
+
+  .sub { margin: 0; color: var(--text-2); font-size: 14px; }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+    gap: 16px;
+    padding-bottom: 60px;
+  }
+
+  .card { padding: 24px 26px; }
+
+  .card h2 {
+    margin: 0 0 14px;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-1);
+  }
+
+  .card p {
+    margin: 0 0 16px;
+    font-size: 13.5px;
+    line-height: 1.75;
+    color: var(--text-2);
+  }
+
+  .facts,
+  .links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 9px;
+  }
+
+  .facts li,
+  .links li a {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed rgba(255, 255, 255, .09);
+  }
+
+  .facts li:last-child,
+  .links li a:last-child { border-bottom: none; padding-bottom: 0; }
+
+  .links li a {
+    text-decoration: none;
+    transition: color .18s;
+  }
+
+  .links li a:hover .v { color: var(--violet); }
+
+  .k {
+    flex: 0 0 auto;
+    font-size: 12.5px;
+    color: var(--text-3);
+  }
+
+  .v {
+    font-size: 13px;
+    color: var(--text-2);
+    text-align: right;
+    transition: color .18s;
+  }
+
+  .stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+
+  .tech {
+    padding: 5px 11px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-family: var(--font-mono);
+    color: #D9C4FF;
+    background: rgba(176, 125, 255, .12);
+    border: 1px solid rgba(176, 125, 255, .24);
+  }
+</style>

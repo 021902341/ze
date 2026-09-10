@@ -1,0 +1,141 @@
+---
+import type { Post } from '../utils/site';
+import { formatDate, readingTime, postHref, categoryHref, tagHref } from '../utils/site';
+
+interface Props {
+  post: Post;
+}
+
+const { post } = Astro.props;
+const { data, body } = post as Post & { body?: string };
+const href = postHref(post);
+---
+
+<article class="post-card glass">
+  <div class="meta">
+    <time datetime={data.pubDate.toISOString()}>{formatDate(data.pubDate)}</time>
+    <span class="sep" aria-hidden="true">·</span>
+    <span>{readingTime(body)} 分钟</span>
+    {data.draft && <span class="draft">草稿</span>}
+  </div>
+
+  <h3 class="title">
+    <a href={href}>{data.title}</a>
+  </h3>
+
+  {data.description && <p class="desc">{data.description}</p>}
+
+  <div class="foot">
+    <a class="chip cat" href={categoryHref(data.category)}>{data.category}</a>
+    {data.tags.length > 0 && (
+      <span class="tags">
+        {data.tags.map((t) => <a class="chip" href={tagHref(t)}>{t}</a>)}
+      </span>
+    )}
+  </div>
+</article>
+
+<style>
+  .post-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 22px 24px 20px;
+    transition: transform .22s cubic-bezier(.2, .8, .2, 1), background .22s, border-color .22s, box-shadow .22s;
+  }
+
+  .post-card:hover {
+    transform: translateY(-4px);
+    background: var(--glass-bg-hover);
+    border-color: rgba(176, 125, 255, .42);
+    box-shadow: 0 22px 54px -22px rgba(176, 125, 255, .5);
+  }
+
+  .meta {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12.5px;
+    font-family: var(--font-mono);
+    color: var(--text-3);
+  }
+
+  .sep { opacity: .5; }
+
+  .draft {
+    margin-left: 2px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-family: var(--font-sans);
+    color: #FFA8C4;
+    background: rgba(255, 46, 120, .13);
+    border: 1px solid rgba(255, 46, 120, .3);
+  }
+
+  .title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.45;
+    letter-spacing: -.01em;
+  }
+
+  .title a {
+    text-decoration: none;
+    color: var(--text-1);
+    transition: color .18s;
+  }
+
+  .post-card:hover .title a { color: var(--violet); }
+
+  .desc {
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--text-2);
+  }
+
+  .foot {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: auto;
+    padding-top: 6px;
+  }
+
+  .tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .chip {
+    padding: 3px 9px;
+    border-radius: 7px;
+    font-size: 11.5px;
+    text-decoration: none;
+    color: #D9C4FF;
+    background: rgba(176, 125, 255, .12);
+    border: 1px solid rgba(176, 125, 255, .24);
+    transition: background .18s, border-color .18s, color .18s;
+  }
+
+  .chip:hover {
+    background: rgba(176, 125, 255, .24);
+    border-color: rgba(176, 125, 255, .5);
+    color: #fff;
+  }
+
+  .chip.cat {
+    color: #FFC9DC;
+    background: rgba(255, 46, 120, .12);
+    border-color: rgba(255, 46, 120, .28);
+  }
+
+  .chip.cat:hover {
+    background: rgba(255, 46, 120, .24);
+    border-color: rgba(255, 46, 120, .52);
+  }
+</style>
