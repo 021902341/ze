@@ -1,0 +1,44 @@
+---
+import '../styles/global.css';
+import GlowBackdrop from '../components/GlowBackdrop.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'ze · 个人门户',
+  description = '个人主页 · 技术博客 · 导航收藏夹 · 在线工具',
+} = Astro.props;
+
+// canonical 由 SITE_URL 环境变量推导，两个站点各自生成正确的绝对地址
+const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).href;
+const siteName = 'ze';
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="generator" content={Astro.generator} />
+  </head>
+
+  <body>
+    <GlowBackdrop />
+    <slot />
+  </body>
+</html>

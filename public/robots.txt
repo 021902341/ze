@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+# 站点地图由 @astrojs/sitemap 在构建时生成，此处由环境变量注入绝对地址

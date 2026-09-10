@@ -1,0 +1,16 @@
+# Windows 下强制 LF，避免 CRLF 污染仓库导致两个平台构建行为不一致
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.avif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.mp3 binary
+*.mp4 binary

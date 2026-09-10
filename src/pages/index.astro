@@ -1,0 +1,181 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// 首页入口卡片 —— 后续每个模块做好后把 href 指向实际路由即可
+const entries = [
+  { href: '/blog/', title: '技术博客', desc: 'Markdown 写作，记录学习与踩坑', icon: '✎' },
+  { href: '/nav/', title: '导航收藏', desc: '常用站点与工具的个人书签', icon: '⌘' },
+  { href: '/tools/', title: '在线工具', desc: '随手能用的纯前端小工具', icon: '⚙' },
+  { href: '/reference-ranking.html', title: '建站参考榜单', desc: '82 个高星个人博客项目选型表', icon: '★' },
+  { href: '/about', title: '关于我', desc: '软件工程 · 27 专升本 · 天津', icon: '☺' },
+];
+---
+
+<BaseLayout title="ze · 个人门户" description="个人主页 · 技术博客 · 导航收藏夹 · 在线工具">
+  <main class="shell">
+    <section class="hero">
+      <span class="eyebrow"><i class="dot"></i> 站点骨架已就绪 · Stage 1</span>
+      <h1 class="grad-text">ze</h1>
+      <p class="lead">
+        个人主页 · 技术博客 · 导航收藏夹 · 在线工具<br />
+        深色主题 / 动态 glow / 毛玻璃卡片 —— 一份代码，海内外双站同步。
+      </p>
+    </section>
+
+    <section class="entries">
+      {entries.map((e) => (
+        <a class="entry glass" href={e.href}>
+          <span class="icon" aria-hidden="true">{e.icon}</span>
+          <span class="body">
+            <strong>{e.title}</strong>
+            <small>{e.desc}</small>
+          </span>
+          <span class="arrow" aria-hidden="true">→</span>
+        </a>
+      ))}
+    </section>
+
+    <footer>
+      <p>Astro 7 · Tailwind 4 · 纯静态产物 · 海外 / 国内双站部署</p>
+    </footer>
+  </main>
+</BaseLayout>
+
+<style>
+  main {
+    padding-top: 96px;
+    padding-bottom: 80px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .hero {
+    text-align: center;
+    margin-bottom: 52px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 7px 16px;
+    margin-bottom: 24px;
+    border-radius: 999px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    font-size: 12.5px;
+    letter-spacing: .04em;
+    color: var(--text-2);
+  }
+
+  .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--magenta);
+    box-shadow: 0 0 12px var(--magenta);
+    animation: pulse 2.2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: .45; transform: scale(.82); }
+  }
+
+  h1 {
+    font-size: clamp(62px, 13vw, 132px);
+    font-weight: 800;
+    letter-spacing: -.05em;
+    line-height: .94;
+    margin: 0 0 22px;
+  }
+
+  .lead {
+    color: var(--text-2);
+    font-size: 15.5px;
+    margin: 0;
+  }
+
+  .entries {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(272px, 1fr));
+    gap: 16px;
+    flex: 1;
+  }
+
+  .entry {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px 22px;
+    text-decoration: none;
+    color: inherit;
+    transition: transform .22s cubic-bezier(.2, .8, .2, 1), background .22s, border-color .22s, box-shadow .22s;
+  }
+
+  .entry:hover {
+    transform: translateY(-4px);
+    background: var(--glass-bg-hover);
+    border-color: rgba(176, 125, 255, .42);
+    box-shadow: 0 22px 54px -22px rgba(176, 125, 255, .5);
+  }
+
+  .icon {
+    flex: 0 0 auto;
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    border-radius: 13px;
+    font-size: 18px;
+    background: linear-gradient(135deg, rgba(255, 46, 120, .22), rgba(176, 125, 255, .22));
+    border: 1px solid rgba(176, 125, 255, .3);
+  }
+
+  .body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .body strong {
+    font-size: 15.5px;
+    font-weight: 700;
+  }
+
+  .body small {
+    font-size: 12.5px;
+    color: var(--text-3);
+    line-height: 1.5;
+  }
+
+  .arrow {
+    color: var(--text-3);
+    transition: transform .22s, color .22s;
+  }
+
+  .entry:hover .arrow {
+    transform: translateX(4px);
+    color: var(--violet);
+  }
+
+  footer {
+    margin-top: 52px;
+    padding-top: 24px;
+    border-top: 1px solid var(--glass-border);
+    text-align: center;
+    color: var(--text-3);
+    font-size: 12.5px;
+  }
+
+  footer p { margin: 0; }
+
+  @media (max-width: 640px) {
+    main { padding-top: 68px; }
+    .entries { grid-template-columns: 1fr; }
+  }
+</style>

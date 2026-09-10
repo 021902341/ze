@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GitHub 高星个人博客项目榜单 · 建站选型参考</title>
+<meta name="description" content="从 GitHub 实时抓取的高星个人博客框架、主页模板、主题与组件榜单，按 star 排序，共 70+ 项目。">
+<style>
+/* ============================================================
+   Design Tokens —— 深紫渐变 + 品红/紫双 glow + glassmorphism
+   统一视觉语言，后续门户站可直接复用这一层
+   ============================================================ */
+:root{
+  --bg-0:#05030F;
+  --bg-1:#190D40;
+  --magenta:#FF2E78;
+  --violet:#B07DFF;
+  --cyan:#5CE1E6;
+  --amber:#FFC46B;
+
+  --glass-bg:rgba(255,255,255,.06);
+  --glass-bg-hover:rgba(255,255,255,.10);
+  --glass-border:rgba(255,255,255,.16);
+  --glass-blur:24px;
+  --radius:28px;
+  --radius-sm:14px;
+
+  --text-1:#F4F1FA;
+  --text-2:rgba(244,241,250,.72);
+  --text-3:rgba(244,241,250,.45);
+
+  --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI Variable Display","Segoe UI",
+    "PingFang SC","Hiragino Sans GB","Microsoft YaHei UI","Microsoft YaHei",
+    "Source Han Sans SC","Noto Sans CJK SC",sans-serif;
+  --mono:"JetBrains Mono","Cascadia Code",Consolas,"SFMono-Regular",Menlo,monospace;
+
+  --shadow:0 18px 60px -18px rgba(0,0,0,.75);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+
+body{
+  font-family:var(--font-sans);
+  background:var(--bg-0);
+  color:var(--text-1);
+  line-height:1.6;
+  min-height:100vh;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ---------- 动态 glow 背景 ---------- */
+.bg-layer{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.bg-layer::before{
+  content:"";position:absolute;inset:0;
+  background:
+    radial-gradient(1100px 700px at 12% -8%, rgba(176,125,255,.28), transparent 62%),
+    radial-gradient(900px 620px at 88% 6%, rgba(255,46,120,.22), transparent 60%),
+    radial-gradient(1000px 800px at 50% 108%, rgba(92,225,230,.14), transparent 62%),
+    linear-gradient(165deg,var(--bg-0) 0%,var(--bg-1) 46%,var(--bg-0) 100%);
+}
+.orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;animation:float 22s ease-in-out infinite}
+.orb.a{width:520px;height:520px;background:var(--magenta);top:-160px;left:-120px}
+.orb.b{width:460px;height:460px;background:var(--violet);top:24%;right:-140px;animation-delay:-7s}
+.orb.c{width:400px;height:400px;background:var(--cyan);bottom:-140px;left:32%;animation-delay:-14s;opacity:.32}
+@keyframes float{
+  0%,100%{transform:translate3d(0,0,0) scale(1)}
+  33%{transform:translate3d(42px,-34px,0) scale(1.08)}
+  66%{transform:translate3d(-34px,26px,0) scale(.95)}
+}
+@media (prefers-reduced-motion:reduce){.orb{animation:none}}
+
+/* ---------- 布局 ---------- */
+.shell{position:relative;z-index:1;max-width:1320px;margin:0 auto;padding:64px 24px 96px}
+
+/* ---------- Hero ---------- */
+.hero{text-align:center;margin-bottom:44px}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:9px;
+  padding:7px 16px;border-radius:999px;
+  background:var(--glass-bg);border:1px solid var(--glass-border);
+  backdrop-filter:blur(var(--glass-blur));-webkit-backdrop-filter:blur(var(--glass-blur));
+  font-size:12.5px;letter-spacing:.04em;color:var(--text-2);margin-bottom:22px;
+}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--magenta);box-shadow:0 0 12px var(--magenta);animation:pulse 2.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.82)}}
+
+h1{
+  font-size:clamp(30px,5.2vw,54px);font-weight:800;letter-spacing:-.025em;line-height:1.14;
+  background:linear-gradient(120deg,#fff 8%,var(--violet) 46%,var(--magenta) 82%,var(--amber) 100%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  margin-bottom:16px;
+}
+.hero p.lead{color:var(--text-2);max-width:640px;margin:0 auto;font-size:15.5px}
+.hero p.lead b{color:var(--text-1);font-weight:600}
+
+/* ---------- 统计条 ---------- */
+.stats{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-top:32px}
+.stat{
+  min-width:132px;padding:16px 24px;border-radius:var(--radius-sm);text-align:center;
+  background:var(--glass-bg);border:1px solid var(--glass-border);
+  backdrop-filter:blur(var(--glass-blur));-webkit-backdrop-filter:blur(var(--glass-blur));
+}
+.stat .n{font-size:25px;font-weight:800;font-family:var(--mono);letter-spacing:-.02em;
+  background:linear-gradient(120deg,var(--violet),var(--magenta));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.stat .l{font-size:11.5px;color:var(--text-3);letter-spacing:.06em;margin-top:3px}
+
+/* ---------- 控制区 ---------- */
+.controls{
+  position:sticky;top:14px;z-index:20;margin:36px 0 30px;
+  display:flex;flex-wrap:wrap;gap:12px;align-items:center;
+  padding:13px;border-radius:20px;
+  background:rgba(10,6,26,.72);border:1px solid var(--glass-border);
+  backdrop-filter:blur(var(--glass-blur)) saturate(150%);-webkit-backdrop-filter:blur(var(--glass-blur)) saturate(150%);
+  box-shadow:var(--shadow);
+}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;flex:1 1 auto}
+.tab{
+  padding:8px 15px;border-radius:11px;font-size:13.5px;font-weight:600;cursor:pointer;
+  background:transparent;border:1px solid transparent;color:var(--text-2);
+  transition:.18s ease;white-space:nowrap;font-family:inherit;
+}
+.tab:hover{background:var(--glass-bg);color:var(--text-1)}
+.tab.on{
+  background:linear-gradient(120deg,rgba(255,46,120,.26),rgba(176,125,255,.26));
+  border-color:rgba(255,46,120,.5);color:#fff;
+  box-shadow:0 0 22px -4px rgba(255,46,120,.55);
+}
+.tab .cnt{font-family:var(--mono);font-size:11px;opacity:.62;margin-left:5px}
+.search-wrap{position:relative;flex:0 1 240px}
+.search-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);opacity:.42;pointer-events:none}
+#q{
+  width:100%;padding:9px 13px 9px 36px;border-radius:11px;font-size:13.5px;font-family:inherit;
+  background:rgba(255,255,255,.05);border:1px solid var(--glass-border);color:var(--text-1);
+  outline:none;transition:.18s;
+}
+#q::placeholder{color:var(--text-3)}
+#q:focus{border-color:rgba(176,125,255,.62);box-shadow:0 0 0 3px rgba(176,125,255,.14)}
+.toggle{
+  display:inline-flex;align-items:center;gap:7px;padding:8px 13px;border-radius:11px;cursor:pointer;
+  background:var(--glass-bg);border:1px solid var(--glass-border);font-size:13px;color:var(--text-2);
+  transition:.18s;white-space:nowrap;font-family:inherit;font-weight:600;
+}
+.toggle:hover{color:var(--text-1);background:var(--glass-bg-hover)}
+.toggle.on{background:linear-gradient(120deg,rgba(255,196,107,.22),rgba(255,46,120,.2));border-color:rgba(255,196,107,.5);color:#fff}
+.toggle .star{color:var(--amber)}
+
+/* ---------- 分组标题 ---------- */
+.group{margin-bottom:44px;scroll-margin-top:110px}
+.group-head{display:flex;align-items:baseline;gap:13px;margin:0 4px 18px;flex-wrap:wrap}
+.group-head h2{font-size:20px;font-weight:750;letter-spacing:-.01em}
+.group-head .desc{font-size:13.5px;color:var(--text-3)}
+.group-head .rule{flex:1;height:1px;background:linear-gradient(90deg,rgba(176,125,255,.42),transparent);min-width:30px}
+.group-head .count{font-family:var(--mono);font-size:12px;color:var(--violet);opacity:.8}
+
+/* ---------- 卡片网格 ---------- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(316px,1fr));gap:16px}
+
+.card{
+  position:relative;display:flex;flex-direction:column;gap:11px;
+  padding:19px 19px 17px;border-radius:var(--radius);
+  background:var(--glass-bg);border:1px solid var(--glass-border);
+  backdrop-filter:blur(var(--glass-blur)) saturate(140%);-webkit-backdrop-filter:blur(var(--glass-blur)) saturate(140%);
+  transition:transform .22s cubic-bezier(.2,.8,.2,1),background .22s,border-color .22s,box-shadow .22s;
+  overflow:hidden;
+}
+.card::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;opacity:0;transition:opacity .22s;
+  background:radial-gradient(420px 190px at var(--mx,50%) var(--my,0%),rgba(176,125,255,.16),transparent 70%);
+  pointer-events:none;
+}
+.card:hover{transform:translateY(-4px);background:var(--glass-bg-hover);border-color:rgba(176,125,255,.42);box-shadow:0 22px 54px -22px rgba(176,125,255,.5)}
+.card:hover::after{opacity:1}
+.card.pick{border-color:rgba(255,196,107,.42)}
+.card.pick::before{
+  content:"";position:absolute;left:0;top:0;width:3px;height:100%;
+  background:linear-gradient(180deg,var(--amber),var(--magenta));
+}
+
+.card-top{display:flex;align-items:flex-start;gap:12px}
+.rank{
+  flex:0 0 auto;width:31px;height:31px;border-radius:10px;display:grid;place-items:center;
+  font-family:var(--mono);font-size:12.5px;font-weight:700;color:var(--text-3);
+  background:rgba(255,255,255,.05);border:1px solid var(--glass-border);
+}
+.rank.top{background:linear-gradient(135deg,rgba(255,46,120,.34),rgba(176,125,255,.34));color:#fff;border-color:rgba(255,46,120,.5);box-shadow:0 0 18px -4px rgba(255,46,120,.65)}
+.card-title{flex:1;min-width:0}
+.repo{
+  font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--text-1);
+  text-decoration:none;word-break:break-all;display:block;line-height:1.35;
+}
+.repo:hover{color:var(--violet);text-decoration:underline;text-underline-offset:3px}
+.repo .owner{color:var(--text-3);font-weight:400}
+.stars{
+  flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;
+  font-family:var(--mono);font-size:12.5px;font-weight:700;color:var(--amber);
+  background:rgba(255,196,107,.11);border:1px solid rgba(255,196,107,.3);
+}
+.stars svg{width:12px;height:12px;fill:currentColor}
+
+.desc{font-size:13.5px;color:var(--text-2);line-height:1.62;flex:1}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{
+  padding:3px 9px;border-radius:7px;font-size:11.5px;font-family:var(--mono);
+  background:rgba(176,125,255,.12);border:1px solid rgba(176,125,255,.24);color:#D9C4FF;
+}
+.tag.lang{background:rgba(92,225,230,.1);border-color:rgba(92,225,230,.26);color:#A8EEF1}
+.tag.warn{background:rgba(255,46,120,.13);border-color:rgba(255,46,120,.3);color:#FFA8C4}
+.tag.pick{background:linear-gradient(120deg,rgba(255,196,107,.2),rgba(255,46,120,.18));border-color:rgba(255,196,107,.45);color:#FFDC9E}
+
+.acts{display:flex;gap:8px;margin-top:2px}
+.btn{
+  flex:1;text-align:center;padding:8px 12px;border-radius:10px;font-size:12.5px;font-weight:600;
+  text-decoration:none;color:var(--text-2);background:rgba(255,255,255,.045);
+  border:1px solid var(--glass-border);transition:.18s;
+}
+.btn:hover{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(176,125,255,.5)}
+.btn.primary{background:linear-gradient(120deg,rgba(255,46,120,.2),rgba(176,125,255,.2));color:#fff;border-color:rgba(176,125,255,.42)}
+.btn.primary:hover{background:linear-gradient(120deg,rgba(255,46,120,.34),rgba(176,125,255,.34))}
+.btn.ghost{flex:0 0 auto;padding:8px 11px;opacity:.75}
+.btn.ghost:hover{opacity:1}
+
+.empty{text-align:center;padding:64px 20px;color:var(--text-3);font-size:14px}
+
+/* ---------- 决策面板 ---------- */
+.verdict{
+  margin:56px 0 0;padding:30px;border-radius:var(--radius);
+  background:linear-gradient(135deg,rgba(255,46,120,.09),rgba(176,125,255,.09));
+  border:1px solid rgba(176,125,255,.32);
+  backdrop-filter:blur(var(--glass-blur));-webkit-backdrop-filter:blur(var(--glass-blur));
+}
+.verdict h2{font-size:21px;margin-bottom:8px;font-weight:750}
+.verdict > p{color:var(--text-2);font-size:14px;margin-bottom:22px}
+.picks{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.pick-card{padding:18px;border-radius:18px;background:var(--glass-bg);border:1px solid var(--glass-border)}
+.pick-card .role{font-size:11.5px;letter-spacing:.08em;color:var(--violet);font-weight:700;text-transform:uppercase;margin-bottom:8px}
+.pick-card .nm{font-size:16px;font-weight:750;margin-bottom:7px}
+.pick-card .why{font-size:13px;color:var(--text-2);line-height:1.6}
+
+/* ---------- 排除清单 ---------- */
+.ruled-out{margin-top:22px;padding:22px;border-radius:20px;background:rgba(255,46,120,.055);border:1px solid rgba(255,46,120,.24)}
+.ruled-out h3{font-size:15px;margin-bottom:12px;color:#FFA8C4;font-weight:700}
+.ruled-out ul{list-style:none;display:grid;gap:8px}
+.ruled-out li{font-size:13px;color:var(--text-2);padding-left:18px;position:relative}
+.ruled-out li::before{content:"✕";position:absolute;left:0;color:var(--magenta);font-size:11px;top:2px}
+
+/* ---------- 页脚 ---------- */
+footer{margin-top:56px;padding-top:26px;border-top:1px solid var(--glass-border);text-align:center;color:var(--text-3);font-size:12.5px;line-height:2}
+footer code{font-family:var(--mono);background:rgba(255,255,255,.06);padding:2px 7px;border-radius:5px;color:var(--text-2);font-size:12px}
+
+@media(max-width:640px){
+  .shell{padding:38px 15px 70px}
+  .grid{grid-template-columns:1fr}
+  .controls{position:static}
+  .search-wrap{flex:1 1 100%}
+  .stat{flex:1 1 40%;min-width:0;padding:13px 14px}
+  .stat .n{font-size:21px}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-layer" aria-hidden="true">
+  <div class="orb a"></div><div class="orb b"></div><div class="orb c"></div>
+</div>
+
+<div class="shell">
+
+  <header class="hero">
+    <span class="eyebrow"><i class="dot"></i> 数据来自 GitHub API 实时抓取 · 2026-09-11</span>
+    <h1>GitHub 高星个人博客项目榜单</h1>
+    <p class="lead">
+      做个人门户站的选型参考。共收录 <b id="stat-total">0</b> 个项目，按 star 实测排序，
+      覆盖 <b>框架底座 / 个人主页成品 / Astro·Next 模板 / 传统主题 / 必备组件</b> 五大类。
+      带 <span style="color:var(--amber)">★ 推荐</span> 标记的是本项目已选定或强相关的。
+    </p>
+    <div class="stats">
+      <div class="stat"><div class="n" id="stat-projects">0</div><div class="l">收录项目</div></div>
+      <div class="stat"><div class="n" id="stat-stars">0</div><div class="l">星标总计</div></div>
+      <div class="stat"><div class="n">5</div><div class="l">功能分组</div></div>
+      <div class="stat"><div class="n" id="stat-picks">0</div><div class="l">已标记推荐</div></div>
+    </div>
+  </header>
+
+  <div class="controls">
+    <div class="tabs" id="tabs"></div>
+    <div class="search-wrap">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+        <circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/>
+      </svg>
+      <input id="q" type="search" placeholder="搜索仓库 / 语言 / 关键词…" autocomplete="off">
+    </div>
+    <button class="toggle" id="pickOnly"><span class="star">★</span> 只看推荐</button>
+  </div>
+
+  <main id="board"></main>
+
+  <section class="verdict">
+    <h2>选型结论</h2>
+    <p>针对「个人主页 + 博客 + 导航/工具、中文内容、颜值高 + 省心 + 快、不租服务器」这组目标：</p>
+    <div class="picks">
+      <div class="pick-card">
+        <div class="role">底座</div>
+        <div class="nm">Astro <span style="font-family:var(--mono);font-size:12px;color:var(--text-3)">7.3.2</span></div>
+        <div class="why">产物是纯静态 HTML，任何免费平台都能直接托管，不挑部署环境；Islands 架构让你先写纯 HTML/CSS 再按需加交互。三项目标（颜值/省心/快）里唯一能同时拉满的。</div>
+      </div>
+      <div class="pick-card">
+        <div class="role">视觉参考</div>
+        <div class="nm">fuwari + astrowind</div>
+        <div class="why">fuwari 是 Astro 生态颜值最高的博客主题，卡片布局直接抄；astrowind 的 Tailwind 组件体系最完整，省得从零造轮子。</div>
+      </div>
+      <div class="pick-card">
+        <div class="role">Obsidian 用户专属</div>
+        <div class="nm">Quartz</div>
+        <div class="why">直接把 Obsidian 知识库变成网站的数字花园生成器，13.2k star。你已经在用 Obsidian 做第二大脑，这条路径能让笔记零成本上线——值得单独评估。</div>
+      </div>
+      <div class="pick-card">
+        <div class="role">必备组件</div>
+        <div class="nm">Giscus + Pagefind</div>
+        <div class="why">评论用 Giscus（12.1k），零服务器、靠 GitHub Discussions 托管；搜索用 Pagefind，构建期生成静态索引。两个都不需要后端，完全贴合"不租服务器"。</div>
+      </div>
+    </div>
+
+    <div class="ruled-out">
+      <h3>国内免费部署已排除的平台（免备案 + 三级域名 + 国内可访问，三个条件卡掉的）</h3>
+      <ul>
+        <li><b>阿里云 OSS / 华为云 OBS / 七牛云 / 又拍云</b> —— 默认域名是四级或更长，且静态网站托管强制绑定<b>已备案</b>自定义域名</li>
+        <li><b>Vercel / Netlify</b> —— 赠送域名是三级，但国内 DNS 被污染，无法直连；只能当海外站</li>
+        <li><b>Gitee Pages</b> —— 域名是三级（<code>用户名.gitee.io</code>），但个人免费版需实名认证且没有自动构建，更新次数受限</li>
+        <li><b>agentos-app 类平台</b> —— 赠送的是四级长域名（如 <code>随机串.sh1.agentos-app.net</code>），层级太低</li>
+      </ul>
+      <p style="margin-top:14px;font-size:13px;color:var(--text-2)">
+        ✅ 唯一同时满足四个条件的是 <b>腾讯云 EdgeOne Pages</b>：<code>xxx.edgeone.app</code>（三级）、长期免费、免备案、国内节点秒开、原生支持 Astro 自动构建。
+      </p>
+    </div>
+  </section>
+
+  <footer>
+    <div>数据获取时间：2026-09-11 ｜ 来源：GitHub REST API v3（<code>search/repositories</code> 与 <code>repos/:owner/:repo</code>）</div>
+    <div>star 数会随时间波动，误差属正常；「预览」链接指向项目官方站点或官方 Demo。</div>
+    <div style="margin-top:8px;opacity:.6">为「ze」个人门户站制作的选型参考 · 阶段一交付物</div>
+  </footer>
+
+</div>
+
+<script>
+/* ============================================================
+   数据层：全部 star 数于 2026-09-11 通过 GitHub API 实测
+   ============================================================ */
+const CATS = [
+  {id:'all',       name:'全部'},
+  {id:'framework', name:'框架底座',  desc:'先选地基，决定后续一切'},
+  {id:'homepage',  name:'个人主页成品', desc:'看完整体形态，学结构与视觉'},
+  {id:'template',  name:'Astro / Next 模板', desc:'最接近可直接改造的起点'},
+  {id:'theme',     name:'传统主题', desc:'Hexo / Hugo / Jekyll 生态，对标审美'},
+  {id:'widget',    name:'必备组件', desc:'评论 / 搜索 / 统计 / 音乐等即插即用模块'}
+];
+
+const DATA = [
+  /* ---------- ① 框架底座 ---------- */
+  {cat:'framework', name:'gohugoio/hugo', stars:89776, lang:'Go', pick:true,
+   desc:'号称世界最快的静态网站生成器。单个二进制文件、零运行时依赖，几千篇文章也能秒级构建。',
+   tags:['SSG','免 Node'], repo:'https://github.com/gohugoio/hugo', demo:'https://gohugo.io'},
+  {cat:'framework', name:'facebook/docusaurus', stars:66217, lang:'TypeScript',
+   desc:'Meta 出品，文档 + 博客一体化，React 驱动。适合技术文档与博客混排的场景。',
+   tags:['React','文档+博客'], repo:'https://github.com/facebook/docusaurus', demo:'https://docusaurus.io'},
+  {cat:'framework', name:'withastro/astro', stars:62458, lang:'TypeScript', pick:true,
+   desc:'本项目选定底座。内容驱动 + Islands 架构，默认输出零 JS 的纯静态 HTML，任何免费平台都能托管。',
+   tags:['Islands','零 JS 默认'], repo:'https://github.com/withastro/astro', demo:'https://astro.build'},
+  {cat:'framework', name:'nuxt/nuxt', stars:60836, lang:'TypeScript',
+   desc:'Vue 全栈框架，SSR / SSG / ISR 通吃。功能强大但需要 Node 运行时或静态预渲染配置。',
+   tags:['Vue','全栈'], repo:'https://github.com/nuxt/nuxt', demo:'https://nuxt.com'},
+  {cat:'framework', name:'gatsbyjs/gatsby', stars:55940, lang:'JavaScript',
+   desc:'React + GraphQL 的重型静态方案。生态庞大，但构建慢、心智负担重，近年热度下滑。',
+   tags:['React','GraphQL'], repo:'https://github.com/gatsbyjs/gatsby', demo:'https://www.gatsbyjs.com'},
+  {cat:'framework', name:'jekyll/jekyll', stars:51654, lang:'Ruby',
+   desc:'GitHub Pages 原生支持的元老级方案，生态成熟。但需要 Ruby 环境，Windows 上体验一般。',
+   tags:['Ruby','GH Pages 原生'], repo:'https://github.com/jekyll/jekyll', demo:'https://jekyllrb.com'},
+  {cat:'framework', name:'hexojs/hexo', stars:41762, lang:'TypeScript',
+   desc:'中文博客圈最主流的方案，教程和主题生态最丰富。缺点是文章量大时构建会明显变慢。',
+   tags:['中文生态最好','Node'], repo:'https://github.com/hexojs/hexo', demo:'https://hexo.io'},
+  {cat:'framework', name:'vuejs/vuepress', stars:22732, lang:'JavaScript',
+   desc:'Vue 驱动的极简静态生成器，文档向。注意官方已推荐新项目迁移到 VitePress。',
+   tags:['Vue','文档向'], repo:'https://github.com/vuejs/vuepress', demo:'https://vuepress.vuejs.org'},
+  {cat:'framework', name:'11ty/eleventy', stars:19895, lang:'JavaScript',
+   desc:'极简灵活的模板驱动生成器，不绑定任何前端框架，产物极其轻量。',
+   tags:['零框架','轻量'], repo:'https://github.com/11ty/eleventy', demo:'https://www.11ty.dev'},
+  {cat:'framework', name:'decaporg/decap-cms', stars:19366, lang:'JavaScript',
+   desc:'基于 Git 的 CMS 后台，给静态站加一个可视化编辑界面。可搭配任意 SSG 使用。',
+   tags:['Git CMS','可视化编辑'], repo:'https://github.com/decaporg/decap-cms', demo:'https://decapcms.org'},
+  {cat:'framework', name:'vuejs/vitepress', stars:18306, lang:'TypeScript',
+   desc:'Vite + Vue 驱动，专注文档场景。构建快、主题简洁，但不适合做个人主页门户。',
+   tags:['Vue','文档向'], repo:'https://github.com/vuejs/vitepress', demo:'https://vitepress.dev'},
+  {cat:'framework', name:'getzola/zola', stars:17412, lang:'Rust',
+   desc:'单二进制、内置全部功能的 Rust 静态生成器，速度与 Hugo 同级，但主题生态小得多。',
+   tags:['Rust','单二进制'], repo:'https://github.com/getzola/zola', demo:'https://www.getzola.org'},
+  {cat:'framework', name:'getpelican/pelican', stars:13337, lang:'Python',
+   desc:'Python 生态的老牌生成器，支持 Markdown 与 reST。适合 Python 开发者。',
+   tags:['Python'], repo:'https://github.com/getpelican/pelican', demo:'https://getpelican.com'},
+  {cat:'framework', name:'jackyzha0/quartz', stars:13204, lang:'TypeScript', pick:true,
+   desc:'把 Obsidian 知识库直接变成网站的数字花园生成器，支持双链、图谱、全文搜索。你已在用 Obsidian 做第二大脑，这条路径值得单独评估。',
+   tags:['Obsidian','数字花园'], repo:'https://github.com/jackyzha0/quartz', demo:'https://quartz.jzhao.xyz'},
+
+  /* ---------- ② 个人主页成品 ---------- */
+  {cat:'homepage', name:'lissy93/dashy', stars:26414, lang:'Vue', pick:true,
+   desc:'可自托管的个人仪表盘 / 导航页，内置状态检测、小组件、主题、图标包和可视化编辑器。和你规划里的「导航收藏夹 + 在线工具」模块高度重合。',
+   tags:['导航页','自托管','可抄组件'], repo:'https://github.com/lissy93/dashy', demo:'https://dashy.to'},
+  {cat:'homepage', name:'academicpages/academicpages.github.io', stars:17569, lang:'Jekyll',
+   desc:'学术主页模板里星标最高的，开箱即用的 GitHub Pages 方案。结构清晰，适合纯展示型主页。',
+   tags:['开箱即用','Jekyll'], repo:'https://github.com/academicpages/academicpages.github.io', demo:'https://academicpages.github.io'},
+  {cat:'homepage', name:'bchiang7/v4', stars:8282, lang:'Gatsby',
+   desc:'口碑很好的个人站源码，含主页、作品集、博客三块。视觉精致，适合借鉴排版与配色。',
+   tags:['含博客','视觉参考'], repo:'https://github.com/bchiang7/v4', demo:'https://bchiang7.github.io'},
+  {cat:'homepage', name:'codewithsadee/vcard-personal-portfolio', stars:8098, lang:'HTML',
+   desc:'纯 HTML/CSS/JS 的响应式个人作品集模板，无构建步骤。想快速出效果时最省事。',
+   tags:['纯静态','作品集'], repo:'https://github.com/codewithsadee/vcard-personal-portfolio', demo:'https://codewithsadee.github.io/vcard-personal-portfolio'},
+  {cat:'homepage', name:'github/personal-website', stars:7618, lang:'HTML',
+   desc:'GitHub 官方的开发者主页模板，用 Jekyll 构建，简洁克制，直接部署到 GitHub Pages 即可。',
+   tags:['官方','Jekyll'], repo:'https://github.com/github/personal-website'},
+  {cat:'homepage', name:'imfunniee/gitfolio', stars:6825, lang:'JavaScript',
+   desc:'读取你的 GitHub 账号数据自动生成个人主页，含博客模块。改配置就能上线。',
+   tags:['自动生成','GitHub 驱动'], repo:'https://github.com/imfunniee/gitfolio', demo:'https://imfunniee.github.io/gitfolio'},
+  {cat:'homepage', name:'imsyy/home', stars:4573, lang:'Vue',
+   desc:'中文个人主页里最受欢迎的一个。Vue 实现，视觉偏二次元 + 玻璃拟态，你熟悉的那个形态。',
+   tags:['中文','Vue'], repo:'https://github.com/imsyy/home'},
+  {cat:'homepage', name:'Innei/Shiro', stars:4242, lang:'TypeScript',
+   desc:'极简纸感风格的个人站源码，Next.js + TS。信息层级处理得很讲究，可参考其内容组织方式。',
+   tags:['极简','Next.js'], repo:'https://github.com/Innei/Shiro', demo:'https://shiro.innei.in'},
+  {cat:'homepage', name:'RayeRen/acad-homepage.github.io', stars:2938, lang:'SCSS',
+   desc:'现代响应式学术主页模板，3k star 但 fork 高达 5.8k，实际使用率极高。改内容即用。',
+   tags:['开箱即用','高 fork'], repo:'https://github.com/RayeRen/acad-homepage.github.io', demo:'https://rayeren.github.io/acad-homepage.github.io'},
+  {cat:'homepage', name:'SimonAKing/HomePage', stars:1372, lang:'JavaScript',
+   desc:'流体动画背景 + 响应式 + 平滑页面过渡的个人主页。它的动态背景实现正好对上你偏好的 glow 效果。',
+   tags:['动态背景','可抄动效'], repo:'https://github.com/SimonAKing/HomePage'},
+
+  /* ---------- ③ Astro / Next 模板 ---------- */
+  {cat:'template', name:'timlrx/tailwind-nextjs-starter-blog', stars:10555, lang:'TypeScript',
+   desc:'技术博客 starter 的标杆，Next.js + Tailwind + MDX。文档、SEO、RSS、暗色模式全都配好了。',
+   tags:['Next.js','starter 标杆'], repo:'https://github.com/timlrx/tailwind-nextjs-starter-blog', demo:'https://tailwind-nextjs-starter-blog.vercel.app'},
+  {cat:'template', name:'leerob/next-mdx-blog', stars:7570, lang:'TypeScript',
+   desc:'Vercel 开发者关系负责人 Lee Robinson 的博客模板，简洁到极致，适合学 Next.js 博客最佳实践。',
+   tags:['Next.js','MDX'], repo:'https://github.com/leerob/next-mdx-blog', demo:'https://leerob.io'},
+  {cat:'template', name:'transitive-bullshit/nextjs-notion-starter-kit', stars:7034, lang:'TypeScript',
+   desc:'用 Notion 当后台、Next.js 当渲染层的建站方案。写作体验极好，但依赖 Notion API。',
+   tags:['Notion 驱动'], repo:'https://github.com/transitive-bullshit/nextjs-notion-starter-kit', demo:'https://transitivebullsh.it/nextjs-notion-starter-kit'},
+  {cat:'template', name:'arthelokyo/astrowind', stars:5953, lang:'Astro', pick:true,
+   desc:'Astro 全能模板，Astro v7 + Tailwind v4。组件体系最完整，落地页、博客、SEO、分析一应俱全——本项目的主要组件参考源。',
+   tags:['Astro','组件最全'], repo:'https://github.com/arthelokyo/astrowind', demo:'https://astrowind.vercel.app'},
+  {cat:'template', name:'satnaing/astro-paper', stars:5034, lang:'Astro',
+   desc:'极简、无障碍、SEO 友好的 Astro 博客主题。代码干净易读，适合当学习 Astro 的第一个项目。',
+   tags:['Astro','极简 SEO'], repo:'https://github.com/satnaing/astro-paper', demo:'https://astro-paper.pages.dev'},
+  {cat:'template', name:'saicaca/fuwari', stars:4989, lang:'Astro', pick:true,
+   desc:'Astro 生态颜值最高的博客模板，Tailwind + Svelte，动效细腻。本项目的卡片布局、配色与过渡效果主要对齐它。',
+   tags:['Astro','颜值最高'], repo:'https://github.com/saicaca/fuwari', demo:'https://fuwari.vercel.app'},
+  {cat:'template', name:'google/eleventy-high-performance-blog', stars:4038, lang:'JavaScript',
+   desc:'Google 出的高性能博客模板，性能指标调校到极致。适合研究 Core Web Vitals 优化手法。',
+   tags:['11ty','性能标杆'], repo:'https://github.com/google/eleventy-high-performance-blog'},
+  {cat:'template', name:'CuteLeaf/Firefly', stars:2110, lang:'Astro',
+   desc:'2025 年新出的 Astro 博客主题，Material Design 风格、清新好看。中文作者，更新活跃，fork 数已达 1.6k。',
+   tags:['Astro','2025 新秀'], repo:'https://github.com/CuteLeaf/Firefly'},
+  {cat:'template', name:'surjithctly/astroship', stars:1971, lang:'Astro',
+   desc:'Astro + Tailwind 的营销站 / 落地页 + 博客模板。适合作品集式的首页表达。',
+   tags:['Astro','落地页'], repo:'https://github.com/surjithctly/astroship', demo:'https://astroship.web3templates.com'},
+  {cat:'template', name:'LyraVoid/Mizuki', stars:1882, lang:'Astro',
+   desc:'Material Design 3 风格的 Astro 博客主题，2025 年新作。视觉现代，组件丰富。',
+   tags:['Astro','MD3'], repo:'https://github.com/LyraVoid/Mizuki'},
+  {cat:'template', name:'chrismwilliams/astro-theme-cactus', stars:1722, lang:'Astro',
+   desc:'简洁的 Astro 主题，明暗切换顺滑。适合喜欢克制排版的人。',
+   tags:['Astro','极简'], repo:'https://github.com/chrismwilliams/astro-theme-cactus', demo:'https://astro-theme-cactus.netlify.app'},
+  {cat:'template', name:'manuelernestog/astrofy', stars:1432, lang:'Astro',
+   desc:'Astro + Tailwind 的个人作品集模板，一个站里塞了博客、简历、项目区、商店和 RSS。',
+   tags:['Astro','作品集'], repo:'https://github.com/manuelernestog/astrofy', demo:'https://astrofy-template.netlify.app'},
+  {cat:'template', name:'cworld1/astro-theme-pure', stars:1063, lang:'Astro', pick:true,
+   desc:'中文作者做的 Astro 博客 + 文档主题，中文排版细节处理到位。做中英混排内容时值得参考。',
+   tags:['Astro','中文友好'], repo:'https://github.com/cworld1/astro-theme-pure', demo:'https://astro-pure.js.org'},
+  {cat:'template', name:'dodolalorc/astro-navfolio', stars:105, lang:'Astro', pick:true,
+   desc:'基于 Astro 的「主页 + 博客 + 作品集 + 数字花园」四合一主题——形态诉求与本项目几乎完全一致，虽然星标不多但结构最值得研究。',
+   tags:['形态一致','四合一'], repo:'https://github.com/dodolalorc/astro-navfolio'},
+
+  /* ---------- ④ 传统主题 ---------- */
+  {cat:'theme', name:'iissnan/hexo-theme-next', stars:15766, lang:'JavaScript', warn:'已归档',
+   desc:'Hexo 最经典的主题，星标最高。但仓库已归档停止维护，新项目请用下面官方维护版。',
+   tags:['Hexo','已归档'], repo:'https://github.com/iissnan/hexo-theme-next'},
+  {cat:'theme', name:'adityatelange/hugo-PaperMod', stars:13898, lang:'HTML',
+   desc:'Hugo 生态最火的主题，干净、响应式、速度极快。想在 Hugo 上做博客基本都会先看它。',
+   tags:['Hugo','最火'], repo:'https://github.com/adityatelange/hugo-PaperMod', demo:'https://adityatelange.github.io/hugo-PaperMod'},
+  {cat:'theme', name:'jerryc127/hexo-theme-butterfly', stars:8362, lang:'JavaScript',
+   desc:'国内最火的 Hexo 主题，功能全、配置项多、中文文档完善。想走 Hexo 路线时的首选。',
+   tags:['Hexo','国内最火'], repo:'https://github.com/jerryc127/hexo-theme-butterfly', demo:'https://butterfly.js.org'},
+  {cat:'theme', name:'litten/hexo-theme-yilia', stars:8343, lang:'JavaScript',
+   desc:'老牌简洁 Hexo 主题，视觉克制优雅。维护活跃度已不高。',
+   tags:['Hexo','简洁'], repo:'https://github.com/litten/hexo-theme-yilia'},
+  {cat:'theme', name:'theme-next/hexo-theme-next', stars:8229, lang:'Stylus',
+   desc:'NexT 主题的官方维护版，取代已归档的 iissnan 版。想要 NexT 就从这个仓库开始。',
+   tags:['Hexo','官方维护'], repo:'https://github.com/theme-next/hexo-theme-next', demo:'https://theme-next.js.org'},
+  {cat:'theme', name:'fluid-dev/hexo-theme-fluid', stars:8169, lang:'JavaScript',
+   desc:'Material Design 风格的 Hexo 主题，卡片式布局、动效顺滑、配置友好。',
+   tags:['Hexo','Material'], repo:'https://github.com/fluid-dev/hexo-theme-fluid', demo:'https://hexo.fluid-dev.com'},
+  {cat:'theme', name:'Huxpro/huxpro.github.io', stars:7602, lang:'Jekyll',
+   desc:'经典中文 Jekyll 博客，影响了一代中文技术博主的排版审美。',
+   tags:['Jekyll','经典中文'], repo:'https://github.com/Huxpro/huxpro.github.io', demo:'https://huxpro.github.io'},
+  {cat:'theme', name:'ppoffice/hexo-theme-icarus', stars:6651, lang:'JavaScript',
+   desc:'简洁现代、配置项完善的 Hexo 主题，自带可视化配置面板。',
+   tags:['Hexo','配置面板'], repo:'https://github.com/ppoffice/hexo-theme-icarus', demo:'https://ppoffice.github.io/hexo-theme-icarus'},
+  {cat:'theme', name:'CaiJimmy/hugo-theme-stack', stars:6468, lang:'HTML',
+   desc:'卡片式 Hugo 主题，专为博客设计。左右分栏 + 圆角卡片的布局思路值得借鉴。',
+   tags:['Hugo','卡片式'], repo:'https://github.com/CaiJimmy/hugo-theme-stack', demo:'https://demo.stack.jimmycai.com'},
+  {cat:'theme', name:'blinkfox/hexo-theme-matery', stars:5360, lang:'JavaScript',
+   desc:'Material Design + 响应式的 Hexo 主题，中文文档齐全，曾非常流行。',
+   tags:['Hexo','Material'], repo:'https://github.com/blinkfox/hexo-theme-matery'},
+  {cat:'theme', name:'HugoBlox/hugo-theme-academic-cv', stars:5060, lang:'Jupyter Notebook',
+   desc:'学术主页 + 简历主题，支持 AI 生成页面。做「个人主页 + 简历」形态时可直接用。',
+   tags:['Hugo','主页+简历'], repo:'https://github.com/HugoBlox/hugo-theme-academic-cv', demo:'https://academic-demo.netlify.app'},
+  {cat:'theme', name:'alex-shpak/hugo-book', stars:4091, lang:'HTML',
+   desc:'极简的 Hugo 文档主题，适合把笔记或教程组织成书的形式。',
+   tags:['Hugo','文档'], repo:'https://github.com/alex-shpak/hugo-book', demo:'https://hugo-book-demo.netlify.app'},
+  {cat:'theme', name:'iblh/hexo-theme-material', stars:4030, lang:'CSS',
+   desc:'Hexo 的 Material Design 主题，经典但更新已趋缓。',
+   tags:['Hexo','Material'], repo:'https://github.com/iblh/hexo-theme-material'},
+  {cat:'theme', name:'dillonzq/LoveIt', stars:3868, lang:'JavaScript',
+   desc:'简洁优雅且功能完备的 Hugo 主题，中文文档友好，国内用户多。',
+   tags:['Hugo','中文友好'], repo:'https://github.com/dillonzq/LoveIt', demo:'https://hugoloveit.com'},
+  {cat:'theme', name:'qiubaiying/qiubaiying.github.io', stars:3313, lang:'Jekyll',
+   desc:'经典的「BY Blog」中文博客模板，很多人第一本博客就是它。',
+   tags:['Jekyll','经典中文'], repo:'https://github.com/qiubaiying/qiubaiying.github.io', demo:'https://qiubaiying.github.io'},
+  {cat:'theme', name:'luizdepra/hugo-coder', stars:3109, lang:'HTML',
+   desc:'极简主义的 Hugo 博客主题，信息密度高、加载极快。',
+   tags:['Hugo','极简'], repo:'https://github.com/luizdepra/hugo-coder', demo:'https://hugo-coder.netlify.app'},
+  {cat:'theme', name:'nunocoracao/blowfish', stars:2890, lang:'HTML',
+   desc:'功能丰富、文档优秀的 Hugo 个人网站 + 博客主题，配置项非常多。',
+   tags:['Hugo','功能丰富'], repo:'https://github.com/nunocoracao/blowfish', demo:'https://blowfish.page'},
+  {cat:'theme', name:'panr/hugo-theme-terminal', stars:2805, lang:'CSS',
+   desc:'复古终端风格的 Hugo 主题，气质独特，适合极客向个人站。',
+   tags:['Hugo','复古终端'], repo:'https://github.com/panr/hugo-theme-terminal', demo:'https://hugo-theme-terminal.netlify.app'},
+  {cat:'theme', name:'anzhiyu-c/hexo-theme-anzhiyu', stars:2541, lang:'Stylus',
+   desc:'安知鱼主题，中文圈近年最活跃的 Hexo 新主题之一，视觉现代、功能激进、更新频繁。',
+   tags:['Hexo','活跃更新'], repo:'https://github.com/anzhiyu-c/hexo-theme-anzhiyu', demo:'https://anzhiy.cn'},
+  {cat:'theme', name:'nanxiaobei/hugo-paper', stars:2412, lang:'CSS',
+   desc:'简单、干净、可定制的 Hugo 主题，白纸感排版。',
+   tags:['Hugo','极简'], repo:'https://github.com/nanxiaobei/hugo-paper', demo:'https://nanxiaobei.github.io/hugo-paper'},
+  {cat:'theme', name:'volantis-x/hexo-theme-volantis', stars:2216, lang:'JavaScript',
+   desc:'以「轻快、优雅、文档完善」著称的 Hexo 主题，配置体系设计得很好。',
+   tags:['Hexo','配置完善'], repo:'https://github.com/volantis-x/hexo-theme-volantis', demo:'https://volantis.js.org'},
+  {cat:'theme', name:'olOwOlo/hugo-theme-even', stars:2090, lang:'SCSS',
+   desc:'超简洁的 Hugo 主题，几乎没有多余装饰，专注阅读。',
+   tags:['Hugo','极简'], repo:'https://github.com/olOwOlo/hugo-theme-even', demo:'https://hugo-theme-even.netlify.app'},
+  {cat:'theme', name:'xaoxuu/hexo-theme-stellar', stars:2026, lang:'JavaScript',
+   desc:'定位是「全能个人知识库」，内置大量标签和动态数据组件，可做博客 / 文档 / 知识库。',
+   tags:['Hexo','知识库'], repo:'https://github.com/xaoxuu/hexo-theme-stellar', demo:'https://xaoxuu.com/wiki/stellar'},
+  {cat:'theme', name:'evannotfound/hexo-theme-redefine', stars:1969, lang:'JavaScript',
+   desc:'「Fast, Pure, Elegant」为口号的 Hexo 主题，重写优化、性能导向。',
+   tags:['Hexo','性能导向'], repo:'https://github.com/evannotfound/hexo-theme-redefine'},
+  {cat:'theme', name:'XPoet/hexo-theme-keep', stars:1433, lang:'Stylus',
+   desc:'简单轻量的 Hexo 主题，主张「让你更专注地写作」。',
+   tags:['Hexo','轻量'], repo:'https://github.com/XPoet/hexo-theme-keep', demo:'https://keep.xpoet.cn'},
+  {cat:'theme', name:'everfu/hexo-theme-solitude', stars:1188, lang:'Stylus',
+   desc:'everfu 开发的 Hexo 主题，美观、强大、性能好，中文圈口碑不错。',
+   tags:['Hexo','美观'], repo:'https://github.com/everfu/hexo-theme-solitude', demo:'https://solitude.js.org'},
+  {cat:'theme', name:'hugo-fixit/FixIt', stars:1119, lang:'HTML',
+   desc:'从 LoveIt 衍生并持续维护的 Hugo 主题，中文文档详尽、功能更全。',
+   tags:['Hugo','中文友好'], repo:'https://github.com/hugo-fixit/FixIt', demo:'https://fixit.lruihao.cn'},
+  {cat:'theme', name:'piharpi/jekyll-klise', stars:1064, lang:'Jekyll',
+   desc:'极简 Jekyll 博客主题，自带明暗切换，干净利落。',
+   tags:['Jekyll','明暗切换'], repo:'https://github.com/piharpi/jekyll-klise', demo:'https://klise.now.sh'},
+  {cat:'theme', name:'reuixiy/hugo-theme-meme', stars:1066, lang:'HTML',
+   desc:'功能扎实的 Hugo 主题，中文作者维护，追求「awesome」的表达。',
+   tags:['Hugo','中文作者'], repo:'https://github.com/reuixiy/hugo-theme-meme'},
+
+  /* ---------- ⑤ 必备组件 ---------- */
+  {cat:'widget', name:'umami-software/umami', stars:38717, lang:'TypeScript',
+   desc:'隐私友好的开源网站统计。自托管需要数据库和服务器，也有官方云版。不想自建就用不蒜子或 51.la。',
+   tags:['统计','需服务器'], repo:'https://github.com/umami-software/umami', demo:'https://umami.is'},
+  {cat:'widget', name:'giscus/giscus', stars:12090, lang:'TypeScript', pick:true,
+   desc:'本项目选定的评论方案。基于 GitHub Discussions，零服务器、零数据库、零成本，一段 script 就接入。',
+   tags:['评论','零服务器'], repo:'https://github.com/giscus/giscus', demo:'https://giscus.app'},
+  {cat:'widget', name:'stevenjoezhang/live2d-widget', stars:10944, lang:'JavaScript',
+   desc:'网页看板娘组件，加载 Live2D 模型。纯前端引入，但要注意模型体积和移动端性能。',
+   tags:['看板娘','纯前端'], repo:'https://github.com/stevenjoezhang/live2d-widget'},
+  {cat:'widget', name:'DIYgod/APlayer', stars:7702, lang:'JavaScript',
+   desc:'颜值很高的 HTML5 音乐播放器，纯前端引入即可，国内 CDN 可用。',
+   tags:['音乐','纯前端'], repo:'https://github.com/DIYgod/APlayer', demo:'https://aplayer.js.org'},
+  {cat:'widget', name:'fancyapps/fancybox', stars:7240, lang:'JavaScript',
+   desc:'老牌图片灯箱库，功能全。注意官方已停止维护，新项目建议优先考虑 medium-zoom。',
+   tags:['灯箱','已归档'], repo:'https://github.com/fancyapps/fancybox', demo:'https://fancyapps.com/fancybox'},
+  {cat:'widget', name:'peaceiris/actions-gh-pages', stars:5360, lang:'TypeScript',
+   desc:'GitHub Actions 里部署静态产物的标准动作，支持 Hugo / Next / Nuxt 等任意生成器。',
+   tags:['部署','GH Actions'], repo:'https://github.com/peaceiris/actions-gh-pages'},
+  {cat:'widget', name:'algolia/docsearch', stars:4378, lang:'TypeScript',
+   desc:'Algolia 托管的文档搜索，接入简单但需申请、且依赖海外服务。国内访问要注意。',
+   tags:['搜索','依赖外服'], repo:'https://github.com/algolia/docsearch', demo:'https://docsearch.algolia.com'},
+  {cat:'widget', name:'francoischalifour/medium-zoom', stars:3942, lang:'JavaScript',
+   desc:'极轻量的图片缩放库，体积极小、无依赖，适合替代 Fancybox 做文章配图灯箱。',
+   tags:['灯箱','超轻量'], repo:'https://github.com/francoischalifour/medium-zoom', demo:'https://medium-zoom.francoischalifour.com'},
+  {cat:'widget', name:'walinejs/waline', stars:3116, lang:'JavaScript',
+   desc:'国产评论系统，功能齐全、界面现代，但需要部署后端 + 数据库。',
+   tags:['评论','需后端'], repo:'https://github.com/walinejs/waline', demo:'https://waline.js.org'},
+  {cat:'widget', name:'ArtalkJS/Artalk', stars:2332, lang:'Go',
+   desc:'Go 写的自托管评论系统，性能好、可内嵌部署。同样需要一台服务器或容器环境。',
+   tags:['评论','需服务器'], repo:'https://github.com/ArtalkJS/Artalk', demo:'https://artalk.js.org'},
+  {cat:'widget', name:'twikoojs/twikoo', stars:2274, lang:'JavaScript',
+   desc:'简洁安全的国产评论系统，可借助腾讯云 CloudBase 免费额度部署，国内访问流畅。',
+   tags:['评论','可用 CloudBase'], repo:'https://github.com/twikoojs/twikoo', demo:'https://twikoo.js.org'},
+  {cat:'widget', name:'xCss/Valine', stars:2228, lang:'JavaScript',
+   desc:'轻量评论系统，基于 LeanCloud。接入快但依赖第三方后端，长期稳定性有争议。',
+   tags:['评论','依赖 LeanCloud'], repo:'https://github.com/xCss/Valine', demo:'https://valine.js.org'},
+  {cat:'widget', name:'metowolf/Meting', stars:2184, lang:'PHP',
+   desc:'音乐 API 框架，把网易云 / QQ 音乐等平台的歌曲转成统一接口，供 APlayer 播放。',
+   tags:['音乐','需后端'], repo:'https://github.com/metowolf/Meting'},
+  {cat:'widget', name:'metowolf/MetingJS', stars:1410, lang:'JavaScript',
+   desc:'Meting 的前端版，一行 script + 一行 aplayer 标签就能在网页里放歌单。',
+   tags:['音乐','纯前端'], repo:'https://github.com/metowolf/MetingJS'},
+  {cat:'widget', name:'Pagefind', stars:0, lang:'Rust', pick:true, noStar:true,
+   desc:'Astro 官方推荐的静态搜索方案。构建时扫描产物生成索引，运行时零服务器、零 API，纯静态站最佳选择。',
+   tags:['搜索','零服务器','Astro 官方'], repo:'https://github.com/Pagefind/pagefind', demo:'https://pagefind.app'}
+];
+
+/* ============================================================
+   渲染
+   ============================================================ */
+const board = document.getElementById('board');
+const tabsEl = document.getElementById('tabs');
+const qEl = document.getElementById('q');
+const pickBtn = document.getElementById('pickOnly');
+
+let state = {cat:'all', q:'', pickOnly:false};
+
+const fmt = n => n >= 1000 ? (n/1000).toFixed(1).replace(/\.0$/,'') + 'k' : String(n);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const catOf = id => CATS.find(c => c.id === id) || {name:id};
+
+function renderTabs(){
+  tabsEl.innerHTML = CATS.map(c => {
+    const n = c.id === 'all' ? DATA.length : DATA.filter(d => d.cat === c.id).length;
+    return `<button class="tab${state.cat===c.id?' on':''}" data-cat="${c.id}">${c.name}<span class="cnt">${n}</span></button>`;
+  }).join('');
+  tabsEl.querySelectorAll('.tab').forEach(b => {
+    b.onclick = () => { state.cat = b.dataset.cat; renderTabs(); render(); };
+  });
+}
+
+function cardHTML(d, rank){
+  const [owner, name] = d.name.includes('/') ? d.name.split('/') : ['', d.name];
+  const starTxt = d.noStar ? '—' : fmt(d.stars);
+  const starTitle = d.noStar ? 'npm 包，非 GitHub 仓库' : d.stars.toLocaleString('en-US') + ' stars';
+  return `
+  <article class="card${d.pick?' pick':''}">
+    <div class="card-top">
+      <div class="rank${rank<=3?' top':''}">${rank}</div>
+      <div class="card-title">
+        <a class="repo" href="${d.repo}" target="_blank" rel="noopener">
+          ${owner?`<span class="owner">${esc(owner)}/</span>`:''}${esc(name)}
+        </a>
+      </div>
+      <span class="stars" title="${starTitle}">
+        <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>${starTxt}
+      </span>
+    </div>
+    <p class="desc">${esc(d.desc)}</p>
+    <div class="tags">
+      ${d.lang?`<span class="tag lang">${esc(d.lang)}</span>`:''}
+      ${(d.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join('')}
+      ${d.pick?'<span class="tag pick">★ 推荐</span>':''}
+      ${d.warn?`<span class="tag warn">${esc(d.warn)}</span>`:''}
+    </div>
+    <div class="acts">
+      <a class="btn primary" href="${d.repo}" target="_blank" rel="noopener">查看仓库</a>
+      ${d.demo?`<a class="btn" href="${d.demo}" target="_blank" rel="noopener">在线预览</a>`:''}
+    </div>
+  </article>`;
+}
+
+function match(d){
+  if(state.cat !== 'all' && d.cat !== state.cat) return false;
+  if(state.pickOnly && !d.pick) return false;
+  if(!state.q) return true;
+  const k = state.q.toLowerCase();
+  return (d.name + ' ' + d.desc + ' ' + (d.lang||'') + ' ' + (d.tags||[]).join(' ') + ' ' + catOf(d.cat).name)
+    .toLowerCase().includes(k);
+}
+
+function render(){
+  const list = DATA.filter(match);
+  if(!list.length){
+    board.innerHTML = '<div class="empty">没有匹配的项目，换个关键词试试～</div>';
+    return;
+  }
+  const groups = state.cat === 'all'
+    ? CATS.filter(c => c.id !== 'all')
+    : CATS.filter(c => c.id === state.cat);
+
+  board.innerHTML = groups.map(g => {
+    const items = list.filter(d => d.cat === g.id).sort((a,b) => (b.stars||0) - (a.stars||0));
+    if(!items.length) return '';
+    return `
+    <section class="group" id="g-${g.id}">
+      <div class="group-head">
+        <h2>${g.name}</h2>
+        <span class="rule"></span>
+        <span class="desc">${g.desc||''}</span>
+        <span class="count">${items.length} 个项目</span>
+      </div>
+      <div class="grid">${items.map((d,i)=>cardHTML(d,i+1)).join('')}</div>
+    </section>`;
+  }).join('');
+
+  // 鼠标跟随高光
+  board.querySelectorAll('.card').forEach(c => {
+    c.addEventListener('mousemove', e => {
+      const r = c.getBoundingClientRect();
+      c.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+      c.style.setProperty('--my', (e.clientY - r.top) + 'px');
+    });
+  });
+}
+
+function renderStats(){
+  const withStars = DATA.filter(d => !d.noStar);
+  document.getElementById('stat-total').textContent = DATA.length;
+  document.getElementById('stat-projects').textContent = DATA.length;
+  document.getElementById('stat-stars').textContent = fmt(withStars.reduce((s,d)=>s+d.stars,0));
+  document.getElementById('stat-picks').textContent = DATA.filter(d=>d.pick).length;
+}
+
+/* 事件 */
+let t;
+qEl.addEventListener('input', e => {
+  clearTimeout(t);
+  t = setTimeout(() => { state.q = e.target.value.trim(); render(); }, 140);
+});
+pickBtn.addEventListener('click', () => {
+  state.pickOnly = !state.pickOnly;
+  pickBtn.classList.toggle('on', state.pickOnly);
+  render();
+});
+
+renderTabs(); render(); renderStats();
+</script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Design Tokens —— 与 public/reference-ranking.html 同一套语言，
+   换主题时只改这一层即可
+   ============================================================ */
+@theme {
+  --color-ink: #05030F;
+  --color-ink-2: #190D40;
+  --color-magenta: #FF2E78;
+  --color-violet: #B07DFF;
+  --color-cyan: #5CE1E6;
+  --color-amber: #FFC46B;
+}
+
+:root {
+  --bg-0: #05030F;
+  --bg-1: #190D40;
+  --magenta: #FF2E78;
+  --violet: #B07DFF;
+  --cyan: #5CE1E6;
+  --amber: #FFC46B;
+
+  --glass-bg: rgba(255, 255, 255, .06);
+  --glass-bg-hover: rgba(255, 255, 255, .1);
+  --glass-border: rgba(255, 255, 255, .16);
+  --glass-blur: 24px;
+  --radius: 28px;
+  --radius-sm: 14px;
+
+  --text-1: #F4F1FA;
+  --text-2: rgba(244, 241, 250, .72);
+  --text-3: rgba(244, 241, 250, .45);
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI",
+    "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei UI", "Microsoft YaHei",
+    "Source Han Sans SC", "Noto Sans CJK SC", sans-serif;
+  --font-mono: "JetBrains Mono", "Cascadia Code", Consolas, "SFMono-Regular", Menlo, monospace;
+  /* 霞鹜文楷屏幕版：装了就用，没装自动回落到上面的系统字体栈 */
+  --font-wenkai: "LXGW WenKai Screen", "LXGW WenKai", "霞鹜文楷屏幕版",
+    var(--font-sans);
+
+  --shadow: 0 18px 60px -18px rgba(0, 0, 0, .75);
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--bg-0);
+  color: var(--text-1);
+  line-height: 1.7;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- 动态 glow 背景 ---------- */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.backdrop::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(1100px 700px at 12% -8%, rgba(176, 125, 255, .28), transparent 62%),
+    radial-gradient(900px 620px at 88% 6%, rgba(255, 46, 120, .22), transparent 60%),
+    radial-gradient(1000px 800px at 50% 108%, rgba(92, 225, 230, .14), transparent 62%),
+    linear-gradient(165deg, var(--bg-0) 0%, var(--bg-1) 46%, var(--bg-0) 100%);
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: .5;
+  animation: float 22s ease-in-out infinite;
+}
+
+.orb-a { width: 520px; height: 520px; background: var(--magenta); top: -160px; left: -120px; }
+.orb-b { width: 460px; height: 460px; background: var(--violet); top: 24%; right: -140px; animation-delay: -7s; }
+.orb-c { width: 400px; height: 400px; background: var(--cyan); bottom: -140px; left: 32%; animation-delay: -14s; opacity: .32; }
+
+@keyframes float {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  33% { transform: translate3d(42px, -34px, 0) scale(1.08); }
+  66% { transform: translate3d(-34px, 26px, 0) scale(.95); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orb { animation: none; }
+}
+
+/* ---------- 玻璃卡片 ---------- */
+.glass {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+}
+
+/* ---------- 布局容器 ---------- */
+.shell {
+  position: relative;
+  z-index: 1;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ---------- 渐变文字 ---------- */
+.grad-text {
+  background: linear-gradient(120deg, #fff 8%, var(--violet) 46%, var(--magenta) 82%, var(--amber) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+a { color: inherit; }
