@@ -5,16 +5,20 @@
   "private": true,
   "description": "ze 的个人门户站 —— 主页 · 博客 · 导航收藏夹 · 在线工具",
   "scripts": {
+    "fonts": "node scripts/copy-fonts.mjs",
+    "predev": "npm run fonts",
     "dev": "astro dev",
     "start": "astro dev",
+    "prebuild": "npm run fonts",
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check"
   },
   "dependencies": {
     "astro": "^7.3.2",
-    "@astrojs/sitemap": "^3.7.4",
-    "tailwindcss": "^4.3.3",
-    "@tailwindcss/vite": "^4.3.3"
+    "@astrojs/sitemap": "^3.7.4"
+  },
+  "devDependencies": {
+    "lxgw-wenkai-screen-webfont": "^1.7.0"
   }
 }

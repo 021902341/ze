@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>方案 F · 杂志拼贴</title>
+<link rel="stylesheet" href="./base.css">
+<style>
+:root{--maxw:1080px}
+
+.masthead{padding:38px 0 26px;border-bottom:2px solid var(--line);margin-bottom:30px}
+.masthead .row{display:flex;align-items:baseline;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.masthead h1{font-size:44px;font-weight:400;letter-spacing:.02em;color:var(--ink-deep);line-height:1.2}
+.masthead h1 i{font-style:normal;color:var(--accent)}
+.masthead .kicker{font-size:12.5px;letter-spacing:.2em;color:var(--ink-muted);margin-bottom:14px}
+.masthead .aside{font-size:13px;color:var(--ink-muted);text-align:right;line-height:1.9}
+
+.mosaic{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  grid-auto-rows:154px;gap:16px;padding-bottom:40px;
+}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;position:relative;text-decoration:none;color:inherit;display:flex;flex-direction:column}
+
+.m1{grid-column:1/3;grid-row:1/3}
+.m2{grid-column:3/4;grid-row:1/3}
+.m3{grid-column:4/5;grid-row:1/2;background:var(--accent);color:#fff}
+.m4{grid-column:4/5;grid-row:2/3}
+.m5{grid-column:1/2;grid-row:3/4}
+.m6{grid-column:2/4;grid-row:3/4}
+.m7{grid-column:4/5;grid-row:3/4}
+
+.body{padding:18px 20px;display:flex;flex-direction:column;justify-content:center;flex:1;min-height:0}
+.big .body{padding:24px 28px}
+.big h3{font-size:21px;line-height:1.45}
+.big p{font-size:12.5px}
+h3{font-size:16.5px;font-weight:400;color:var(--ink-deep);line-height:1.5;margin:9px 0 7px}
+p{font-size:13px;color:var(--ink-muted);line-height:1.7}
+
+.m1{flex-direction:row}
+.m1 .ph{flex:0 0 40%;border-left:1px dashed var(--divider);order:2}
+.m1 .body{order:1}
+
+.m2 .ph{flex:0 0 56%}
+.m2 .body{padding:16px 18px}
+
+.m3 .body{justify-content:space-between;padding:18px 20px}
+.m3 .lab{font-size:12px;letter-spacing:.14em;opacity:.85}
+.m3 .num{font-size:42px;font-weight:400;line-height:1;font-family:var(--mono)}
+.m3 .cap{font-size:13px;opacity:.9}
+
+.m4 .body,.m5 .body,.m7 .body{justify-content:center}
+.m5{background:#fff}
+
+.m6{flex-direction:row;align-items:center}
+.m6 .body{order:1}
+.m6 .side{order:2;flex:0 0 22%;padding:0 18px;border-left:1px dashed var(--divider);align-self:stretch;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.m6 .side b{font-size:19px;font-weight:400;color:var(--accent-dark);font-family:var(--mono);line-height:1}
+.m6 .side span{font-size:11.5px;color:var(--ink-faint);font-family:var(--mono)}
+
+.tags{display:flex;gap:8px;font-size:12px;color:var(--accent-dark);margin-top:10px}
+.m3 .tags{color:rgba(255,255,255,.92)}
+
+.status{margin-bottom:10px}
+</style>
+</head>
+<body>
+
+<nav class="bar">
+  <div class="wrap">
+    <a class="brand" href="#">ze<i>.</i></a>
+    <div class="links"><a href="#" class="on">首页</a><a href="#">博客</a><a href="#">分类</a><a href="#">标签</a><a href="#">关于</a></div>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="row">
+      <div>
+        <div class="kicker">TIANJIN · SINCE 2024</div>
+        <h1>记录学习，<br>也记录踩过的<i>坑</i>。</h1>
+      </div>
+      <div class="aside">
+        42 篇文章 · 6 个分类 · 21 个标签<br>
+        最近更新 2026-09-11
+      </div>
+    </div>
+  </header>
+
+  <div class="mosaic">
+
+    <a class="tile m1" href="#">
+      <div class="ph">封面图</div>
+      <div class="body big">
+        <div class="meta">2026-09-11 · 建站日志</div>
+        <h3>开张：为什么又开了一个站</h3>
+        <p>第三个个人站了。这次不图好看，图能长期活下去 —— 说说这次的取舍，以及为什么把「不租服务器」写进了第一条规矩。</p>
+        <div class="tags"><span>#随笔</span><span>#Astro</span></div>
+      </div>
+    </a>
+
+    <a class="tile m2" href="#">
+      <div class="ph alt">封面图</div>
+      <div class="body">
+        <div class="meta">09-10</div>
+        <h3>Astro 5 之后，内容层写法变了不少</h3>
+        <p>连 zod 都不能从 astro:content 引了。</p>
+      </div>
+    </a>
+
+    <a class="tile m3" href="#">
+      <div class="body">
+        <span class="lab">本站已收录</span>
+        <span class="num">82</span>
+        <span class="cap">个 GitHub 高星建站项目<br>整理成了一份选型榜单 →</span>
+      </div>
+    </a>
+
+    <a class="tile m4" href="#">
+      <div class="body">
+        <div class="meta">09-09</div>
+        <h3>Obsidian 图片路径的坑</h3>
+      </div>
+    </a>
+
+    <a class="tile m5" href="#">
+      <div class="body">
+        <div class="meta">09-07</div>
+        <h3>C 语言指针复习</h3>
+      </div>
+    </a>
+
+    <a class="tile m6" href="#">
+      <div class="body">
+        <div class="meta">09-08 · 建站日志</div>
+        <h3>把 82 个高星个人博客扒了一遍之后</h3>
+        <p>Hugo 星标最多不代表最合适。按「颜值 / 省心 / 速度」三个维度重新排了一遍序。</p>
+      </div>
+      <div class="side"><b>04</b><span>min read</span></div>
+    </a>
+
+    <a class="tile m7" href="#">
+      <div class="body">
+        <div class="meta">09-05</div>
+        <h3>分类与标签</h3>
+        <p>6 类 · 21 标签</p>
+      </div>
+    </a>
+
+  </div>
+
+  <div class="status">
+    <span class="l">导航收藏夹和在线工具还在做，预计这周能上。</span>
+    <span class="r">更新于 2026-09-11</span>
+  </div>
+
+</div>
+
+<footer class="site">Astro 7 · 纯静态 · 海内外双站</footer>
+</body>
+</html>

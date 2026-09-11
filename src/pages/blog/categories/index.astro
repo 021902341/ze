@@ -1,6 +1,5 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import SiteHeader from '../../../components/SiteHeader.astro';
 import { getPosts, formatDate, postHref, categoryHref } from '../../../utils/site';
 
 const posts = await getPosts();
@@ -18,20 +17,23 @@ const groups = [...byCategory.entries()].sort(
 ---
 
 <BaseLayout title="分类 · ze" description="按分类浏览全部文章">
-  <SiteHeader />
+  <main class="wrap">
+    <header class="head">
+      <h1 class="page-title">分类</h1>
+      <p class="page-sub">
+        共 <b>{groups.length}</b> 个分类，<b>{posts.length}</b> 篇文章
+      </p>
+    </header>
 
-  <main class="shell">
-    <section class="page-head">
-      <h1 class="grad-text">分类</h1>
-      <p class="sub">共 <b>{groups.length}</b> 个分类，<b>{posts.length}</b> 篇文章</p>
-    </section>
-
-    <section class="groups">
+    <div class="groups">
       {groups.map(([name, list]) => (
-        <article class="group glass">
-          <header>
-            <h2><a href={categoryHref(name)}>{name}</a></h2>
-            <span class="count">{list.length} 篇</span>
+        <section class="group glass">
+          <header class="gh">
+            <h2>
+              <span class="ic-folder" aria-hidden="true"></span>
+              <a href={categoryHref(name)}>{name}</a>
+            </h2>
+            <span class="cnt">{list.length} 篇</span>
           </header>
           <ul>
             {list.map((p) => (
@@ -41,88 +43,70 @@ const groups = [...byCategory.entries()].sort(
               </li>
             ))}
           </ul>
-        </article>
+        </section>
       ))}
-    </section>
-
-    {groups.length === 0 && <p class="empty">还没有文章。</p>}
+    </div>
   </main>
 </BaseLayout>
 
 <style>
-  .page-head { padding: 34px 0 26px; }
-
-  h1 {
-    margin: 0 0 12px;
-    font-size: clamp(38px, 7vw, 62px);
-    font-weight: 800;
-    letter-spacing: -.035em;
-    line-height: 1.05;
+  .wrap {
+    max-width: var(--content-w);
+    margin: 0 auto;
+    padding: 40px var(--shell-pad) 60px;
   }
 
-  .sub { margin: 0; color: var(--text-2); font-size: 14px; }
-  .sub b { color: var(--text-1); font-family: var(--font-mono); }
+  .head { text-align: center; padding-bottom: 30px; }
+  .head .page-sub { margin-top: 12px; }
+  .head b { color: var(--text-deep); font-family: var(--mono); }
 
-  .groups {
-    display: grid;
-    gap: 16px;
-    padding-bottom: 60px;
-  }
+  .groups { display: flex; flex-direction: column; gap: 14px; }
 
-  .group { padding: 22px 24px; }
+  .group { padding: 20px 24px; }
 
-  .group header {
+  .gh {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
     gap: 12px;
     margin-bottom: 14px;
     padding-bottom: 12px;
-    border-bottom: 1px solid var(--glass-border);
+    border-bottom: 1px dashed var(--divider);
   }
-
-  .group h2 { margin: 0; font-size: 18px; font-weight: 700; }
-
-  .group h2 a { text-decoration: none; color: var(--text-1); transition: color .18s; }
-  .group h2 a:hover { color: var(--violet); }
-
-  .count {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    color: var(--violet);
-    opacity: .8;
-  }
-
-  .group ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
+  .gh h2 {
+    display: flex;
+    align-items: center;
     gap: 9px;
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--c-folder);
   }
+  .gh h2 a {
+    color: var(--text-deep);
+    text-decoration: none;
+    transition: color var(--t) var(--ease);
+  }
+  .gh h2 a:hover { color: var(--primary-dark); }
+  .cnt { font-family: var(--mono); font-size: 12px; color: var(--text-muted); }
 
-  .group li {
+  ul { list-style: none; display: grid; gap: 9px; }
+  li {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
     gap: 14px;
   }
-
-  .group li a {
+  li a {
     font-size: 14px;
-    color: var(--text-2);
+    color: var(--text);
     text-decoration: none;
-    transition: color .18s;
+    transition: color var(--t) var(--ease);
   }
-
-  .group li a:hover { color: var(--violet); }
-
-  .group li time {
+  li a:hover { color: var(--primary-dark); }
+  li time {
     flex: 0 0 auto;
-    font-family: var(--font-mono);
+    font-family: var(--mono);
     font-size: 12px;
-    color: var(--text-3);
+    color: var(--c-date);
   }
-
-  .empty { padding: 60px 0; text-align: center; color: var(--text-3); }
 </style>

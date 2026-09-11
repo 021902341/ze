@@ -1,0 +1,187 @@
+---
+import { SITE, SOCIALS, QUICK_LINKS } from '../data/site';
+import { categoryHref, tagHref } from '../utils/site';
+
+interface Props {
+  postCount: number;
+  categories: Array<[string, number]>;
+  tags: Array<[string, number]>;
+}
+
+const { postCount, categories, tags } = Astro.props;
+const maxTag = Math.max(1, ...tags.map(([, n]) => n));
+const cloudClass = (n: number) => `t${Math.min(5, Math.max(1, Math.round((n / maxTag) * 4) + 1))}`;
+---
+
+<aside class="rail">
+
+  <section class="sc glass">
+    <h3 class="rhombus-h">站点信息</h3>
+    <div class="stats">
+      <div><b>{postCount}</b><span>文章</span></div>
+      <div><b>{categories.length}</b><span>分类</span></div>
+      <div><b>{tags.length}</b><span>标签</span></div>
+    </div>
+    <div class="socials">
+      {SOCIALS.map((s) => (
+        <a href={s.href} target="_blank" rel="noopener">{s.short}</a>
+      ))}
+    </div>
+  </section>
+
+  <section class="sc glass">
+    <h3 class="rhombus-h">已运行</h3>
+    <div class="rt" id="runtime" data-since={SITE.since}>—</div>
+  </section>
+
+  <section class="sc glass">
+    <h3 class="rhombus-h">快捷入口</h3>
+    <div class="quick">
+      {QUICK_LINKS.map((q) => (
+        <a href={q.href}>
+          <span>{q.label}</span>
+          {'soon' in q && q.soon ? <b>即将上线</b> : <i>{'note' in q ? q.note : '→'}</i>}
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="sc glass">
+    <h3 class="rhombus-h">公告</h3>
+    <p class="notice">
+      博客模块已上线，<b>导航收藏夹</b>和<b>在线工具</b>还在做，预计这周能上。
+    </p>
+  </section>
+
+  {categories.length > 0 && (
+    <section class="sc glass">
+      <h3 class="rhombus-h">分类</h3>
+      <div class="chips">
+        {categories.map(([name, n]) => (
+          <a href={categoryHref(name)}>{name}<b>{n}</b></a>
+        ))}
+      </div>
+    </section>
+  )}
+
+  {tags.length > 0 && (
+    <section class="sc glass">
+      <h3 class="rhombus-h">标签</h3>
+      <div class="cloud">
+        {tags.map(([name, n]) => (
+          <a class={cloudClass(n)} href={tagHref(name)}>{name}</a>
+        ))}
+      </div>
+    </section>
+  )}
+
+</aside>
+
+<style>
+  .rail {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    position: sticky;
+    top: calc(var(--navbar-h) + 20px);
+    align-self: start;
+  }
+
+  .sc { padding: 16px 18px; }
+
+  .stats {
+    display: flex;
+    text-align: center;
+    gap: 6px;
+    padding: 4px 0 12px;
+    border-bottom: 1px dashed var(--divider);
+  }
+  .stats div { flex: 1; }
+  .stats b {
+    display: block;
+    font-size: 19px;
+    font-weight: 400;
+    color: var(--primary-dark);
+    line-height: 1.35;
+    font-family: var(--mono);
+  }
+  .stats span { font-size: 11px; color: var(--text-muted); }
+
+  .socials {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 12px;
+    font-size: 12px;
+  }
+  .socials a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color var(--t) var(--ease);
+  }
+  .socials a:hover { color: var(--primary-dark); }
+
+  .rt {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--c-date);
+    text-align: center;
+    padding: 2px 0;
+  }
+
+  .quick { display: flex; flex-direction: column; }
+  .quick a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px dashed var(--divider);
+    font-size: 13.5px;
+    color: var(--text-deep);
+    text-decoration: none;
+    transition: color var(--t) var(--ease);
+  }
+  .quick a:last-child { border-bottom: none; padding-bottom: 0; }
+  .quick a:hover { color: var(--primary-dark); }
+  .quick a b {
+    font-weight: 400;
+    font-size: 10.5px;
+    color: var(--primary-dark);
+    border: 1px solid color-mix(in srgb, var(--primary) 50%, transparent);
+    border-radius: 5px;
+    padding: 1px 6px;
+    white-space: nowrap;
+  }
+  .quick a i { font-style: normal; color: var(--text-muted); font-size: 12px; }
+
+  .notice { font-size: 12.5px; color: var(--text-muted); line-height: 1.75; }
+  .notice b { color: var(--primary-dark); font-weight: 400; }
+
+  @media (max-width: 1080px) {
+    .rail { position: static; flex-direction: row; flex-wrap: wrap; }
+    .rail .sc { flex: 1 1 210px; }
+  }
+</style>
+
+<script>
+  const el = document.getElementById('runtime');
+  if (el) {
+    const since = new Date(el.dataset.since + 'T00:00:00');
+    const tick = () => {
+      const ms = Date.now() - since.getTime();
+      if (ms < 0) {
+        el.textContent = '刚刚上线';
+        return;
+      }
+      const d = Math.floor(ms / 86400000);
+      const h = Math.floor((ms % 86400000) / 3600000);
+      const m = Math.floor((ms % 3600000) / 60000);
+      const s = Math.floor((ms % 60000) / 1000);
+      const p = (n: number) => String(n).padStart(2, '0');
+      el.textContent = `${d} 天 ${p(h)}:${p(m)}:${p(s)}`;
+    };
+    tick();
+    setInterval(tick, 1000);
+  }
+</script>

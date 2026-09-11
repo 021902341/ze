@@ -1,20 +1,17 @@
 ---
 import '../styles/global.css';
-import GlowBackdrop from '../components/GlowBackdrop.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import { SITE } from '../data/site';
 
 interface Props {
   title?: string;
   description?: string;
 }
 
-const {
-  title = 'ze · 个人门户',
-  description = '个人主页 · 技术博客 · 导航收藏夹 · 在线工具',
-} = Astro.props;
+const { title = SITE.title, description = SITE.description } = Astro.props;
 
 // canonical 由 SITE_URL 环境变量推导，两个站点各自生成正确的绝对地址
 const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).href;
-const siteName = 'ze';
 ---
 
 <!doctype html>
@@ -26,7 +23,7 @@ const siteName = 'ze';
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
 
-    <meta property="og:site_name" content={siteName} />
+    <meta property="og:site_name" content={SITE.title} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
@@ -34,11 +31,30 @@ const siteName = 'ze';
     <meta name="twitter:card" content="summary_large_image" />
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    <!--
+      霞鹜文楷屏幕版：388 个 woff2 分片 + unicode-range，
+      浏览器只下载当前页面用到的汉字分片（通常几百 KB）。
+      字体文件由 scripts/copy-fonts.mjs 在 predev/prebuild 时从 npm 包拷进 public/fonts/。
+    -->
+    <link rel="stylesheet" href="/fonts/lxgw/lxgwwenkaigbscreen.css" />
+
+    <!-- 防暗色模式闪白：在样式生效前落类名 -->
+    <script is:inline>
+      (function () {
+        try {
+          var t = localStorage.getItem('theme');
+          var dark = t ? t === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (dark) document.documentElement.classList.add('dark');
+        } catch (e) {}
+      })();
+    </script>
+
     <meta name="generator" content={Astro.generator} />
   </head>
 
   <body>
-    <GlowBackdrop />
+    <SiteHeader />
     <slot />
   </body>
 </html>

@@ -1,17 +1,12 @@
-// @ts-check
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
-import tailwindcss from '@tailwindcss/vite';
 
-// 同源双部署：海外站与国内站各配一份 SITE_URL 环境变量，
-// canonical / sitemap / robots 全部由这个值推导，构建产物本身不区分域名。
-const SITE_URL = process.env.SITE_URL || 'http://localhost:4321';
-
+// SITE_URL 由部署平台注入：
+//   海外站 https://ze.vercel.app
+//   国内站 https://ze.edgeone.app
+// canonical / sitemap / OGP 全部据此生成绝对地址，构建产物本身不区分域名。
 export default defineConfig({
-  site: SITE_URL,
+  site: process.env.SITE_URL || 'http://localhost:4321',
   trailingSlash: 'ignore',
   integrations: [sitemap()],
-  vite: {
-    plugins: [tailwindcss()],
-  },
 });

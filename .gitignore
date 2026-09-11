@@ -29,6 +29,13 @@ desktop.ini
 !.vscode/extensions.json
 .idea/
 
-# 字体子集化产物（构建期生成，不入库）
-public/fonts/*.woff2
-public/fonts/used-chars.txt
+# 字体子集（构建期从 npm 包拷贝，见 scripts/copy-fonts.mjs）
+public/fonts/
+
+# 预览用字体副本（20MB，从 npm 包重新生成即可）
+preview/fonts/
+preview/*.png
+preview/*.pdf
+preview/main.css
+preview/page.html
+preview/home.html

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="7GsMBkmEaRrrPawButlZIu">
+<head data-page-node-id="0CFaXa2ykPGQT7IiEIBQbc">
+<meta charset="UTF-8" data-page-node-id="68Xvta5Fgkd2QUCvqTp9OV">
+<title>方案 B · 便当格</title>
+<link rel="stylesheet" href="./fonts/lxgwwenkaigbscreen.css" data-page-node-id="HuQ74CvGFAWDI00A9iJPn7">
+<style>
+:root{
+  --bg:#fff; --card:#fafafa; --ink:#4c4948; --ink-deep:#333; --ink-muted:#888;
+  --line:rgba(0,0,0,.85); --border:rgba(0,0,0,.08); --divider:rgba(0,0,0,.12);
+  --accent:#DF9193; --accent-dark:#C9787A; --radius:12px; --maxw:1000px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:"LXGW WenKai Screen",STZhongsong,STKaiti,KaiTi,serif;
+  background:var(--bg); color:var(--ink); line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;opacity:.035;z-index:9;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 20px}
+
+nav{border-bottom:1px solid var(--divider)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;height:65px}
+.brand{font-size:21px;letter-spacing:.04em;color:var(--ink-deep)}
+.brand i{color:var(--accent);font-style:normal}
+.links{display:flex;gap:22px;font-size:14px}
+.links a{color:var(--ink);text-decoration:none;padding-bottom:3px}
+.links a.on{color:var(--accent-dark);border-bottom:1px solid var(--accent)}
+
+.page-title{padding:44px 0 26px}
+.page-title h1{font-size:34px;font-weight:400;color:var(--ink-deep);letter-spacing:.01em;margin-bottom:10px}
+.page-title h1::before{content:"";display:inline-block;width:9px;height:9px;background:var(--accent);transform:rotate(45deg);margin-right:12px;vertical-align:4px}
+.page-title p{font-size:14px;color:var(--ink-muted)}
+
+.bento{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding-bottom:40px}
+
+.cell{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:20px 22px;overflow:hidden;
+}
+.cell h2{font-size:13px;font-weight:400;color:var(--ink-muted);letter-spacing:.08em;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.cell h2::before{content:"";width:6px;height:6px;background:var(--accent);transform:rotate(45deg)}
+
+.intro{grid-column:span 2;grid-row:span 2;display:flex;flex-direction:column;justify-content:space-between}
+.intro .top{display:flex;align-items:center;gap:16px;margin-bottom:20px}
+.avatar{width:64px;height:64px;border-radius:50%;background:#f3efec;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--accent)}
+.intro .name{font-size:23px;color:var(--ink-deep);line-height:1.3}
+.intro .role{font-size:13px;color:var(--ink-muted)}
+.intro .bio{font-size:14px;color:var(--ink);line-height:1.85}
+.intro .stats{display:flex;gap:0;margin-top:22px;padding-top:18px;border-top:1px dashed var(--divider)}
+.intro .stats div{flex:1}
+.intro .stats b{display:block;font-size:21px;color:var(--accent-dark);font-weight:400}
+.intro .stats span{font-size:12px;color:var(--ink-muted)}
+
+.posts{grid-column:span 2;display:flex;flex-direction:column;gap:0}
+.post{
+  display:flex;align-items:baseline;gap:12px;padding:11px 0;
+  border-bottom:1px dashed var(--divider);text-decoration:none;color:inherit;
+}
+.post:last-child{border-bottom:none;padding-bottom:0}
+.post .d{font-size:12px;color:#b5afa9;font-family:Menlo,Consolas,monospace;flex:0 0 auto}
+.post h3{font-size:14.5px;font-weight:400;color:var(--ink-deep);line-height:1.5}
+
+.tile{
+  background:var(--card);border:2px solid #000;border-radius:var(--radius);
+  padding:18px 20px;position:relative;
+  box-shadow:4px 4px 0 #000;
+  text-decoration:none;color:inherit;display:block;
+}
+.tile .ico{width:32px;height:32px;border-radius:9px;background:#fff;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--accent-dark);margin-bottom:14px}
+.tile .t{font-size:16px;color:#000;margin-bottom:4px}
+.tile .s{font-size:12.5px;color:var(--ink-muted);line-height:1.6}
+.tile .badge{position:absolute;top:14px;right:16px;font-size:11.5px;color:var(--accent-dark)}
+
+.cats{grid-column:span 2}
+.cat-list{display:flex;flex-wrap:wrap;gap:9px}
+.cat-list a{
+  font-size:13px;color:var(--ink-deep);text-decoration:none;
+  border:1px solid var(--divider);border-radius:8px;padding:5px 12px;background:#fff;
+}
+.cat-list a b{color:var(--accent-dark);font-weight:400;margin-left:5px;font-size:12px}
+
+.tagcloud{grid-column:span 2}
+.tagcloud .cloud{display:flex;flex-wrap:wrap;gap:10px;align-items:baseline}
+.tagcloud a{color:var(--accent-dark);text-decoration:none}
+.t1{font-size:14px}.t2{font-size:19px}.t3{font-size:24px}.t4{font-size:13px}.t5{font-size:16px}
+
+.status{
+  grid-column:span 4;background:var(--accent);color:#fff;border:1px solid var(--line);
+  border-radius:var(--radius);padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:20px;
+}
+.status .l{font-size:15px}
+.status .r{font-size:13px;opacity:.9;font-family:Menlo,Consolas,monospace}
+
+footer{margin-top:20px;border-top:1px solid var(--divider);padding:26px 0 44px;text-align:center;font-size:13px;color:#aaa}
+</style>
+</head>
+<body data-page-node-id="F02QyCiUyInZJDBVlCqHFw">
+
+<nav data-page-node-id="4eWeqVWKXIL5mHTVrRQhc7">
+  <div class="wrap" data-page-node-id="iiQSjOWr9yPYp2Ei0XQsLD">
+    <span class="brand" data-page-node-id="0YKGF97yYzD7nwdGMDUzX3">ze<i data-page-node-id="NAiuyxhtLVZbiKGF3MHU5l">.</i></span>
+    <div class="links" data-page-node-id="u9Saz5qvXhaYDBwY4Z4CPN">
+      <a href="#" class="on" data-page-node-id="dk55Bu3JC1i8ZScYu4g3EU">首页</a><a href="#" data-page-node-id="2Wk9dAUsVxW9QtvmmpL2jq">博客</a><a href="#" data-page-node-id="4I0Gxdn8LkRerAM9fC6yEL">分类</a><a href="#" data-page-node-id="11MQ847OKtBIRO8fRd41Bp">标签</a><a href="#" data-page-node-id="ATKPyeh2nnr7HBFrTnDhiB">关于</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap" data-page-node-id="Bq01kOGeWoSHOjnRUhvMAc">
+  <div class="page-title" data-page-node-id="6yxNeHFBu7zQmihgu8SNN3">
+    <h1 data-page-node-id="Gbd6USvCSpCOXU98dEWGB6">我的赛博工作台</h1>
+    <p data-page-node-id="GfrGiNMtWxtwgL6stsyqRa">写代码、整理笔记、折腾站点。所有东西都摊在这一页上。</p>
+  </div>
+
+  <div class="bento" data-page-node-id="4h2KIf4V1MGmUyc4VNC1O3">
+
+    <section class="cell intro" data-page-node-id="COW3RqVckxQ2LPcEAdJLtY">
+      <div class="top" data-page-node-id="5WkzJMiVpTnR4VjIy5fx4x">
+        <div class="avatar" data-page-node-id="FshN11maXgGT5rASPyk3h8">ze</div>
+        <div data-page-node-id="0bWsPE7G6yDfwlaPrOIt2i">
+          <div class="name" data-page-node-id="AmirAhNSThTDfUDJePL8FS">李雨泽</div>
+          <div class="role" data-page-node-id="CxI9GpJcGMIBbShdHZQ3gs">天津 · 软件工程 · 专升本备考中</div>
+        </div>
+      </div>
+      <p class="bio" data-page-node-id="pPPONoCfLO3mBwYRFVeI3I">在学前端和全栈，用 Obsidian 记笔记，把学到的东西往这个站里丢 —— 学没学会，写出来才知道。</p>
+      <div class="stats" data-page-node-id="BQvvWrpRqv5UFknSGr8vcS">
+        <div data-page-node-id="o0zMAQcqMPLrkID0nltBAG"><b data-page-node-id="ZxhH3v79EoaaDCEobtj9Qi">42</b><span data-page-node-id="EFZEZn3Uhx5FOfK4BZiss5">文章</span></div>
+        <div data-page-node-id="wAAxKN2PovBJ3X4qjxsJzd"><b data-page-node-id="EtQgOtjm3IMjFXHadWB0Ok">6</b><span data-page-node-id="b90ABAOE6Y9CBEsJANXAzM">分类</span></div>
+        <div data-page-node-id="x223i0oCHD16rkWpAPsh2Y"><b data-page-node-id="e43aSFs4lJAgqemWuD0FFz">21</b><span data-page-node-id="DGpsSbXjHPE4kYKcGkZM2c">标签</span></div>
+      </div>
+    </section>
+
+    <section class="cell posts" data-page-node-id="ckUEskFPy5REJKKZTkHRXr">
+      <h2 data-page-node-id="9qa6tKP2WmD5KjriplXt3A">最近更新</h2>
+      <a class="post" href="#" data-page-node-id="P7j87ZJgaAMCxJid6K28KT"><span class="d" data-page-node-id="QMb7MA1DTwliyuRT6WLyxC">09-11</span><h3 data-page-node-id="OW1wBd5DLkQ4ku98EXJLsv">开张：为什么又开了一个站</h3></a>
+      <a class="post" href="#" data-page-node-id="NcETWSyCQBt8H5N2nDkkAZ"><span class="d" data-page-node-id="7Mt65wfLw2SH7UxHp6hHMg">09-10</span><h3 data-page-node-id="dCQEIfPgOcjy6qAfglWOH8">Astro 5 之后，内容层写法变了不少</h3></a>
+      <a class="post" href="#" data-page-node-id="45cjSfozOwxZX7nuqo6n6G"><span class="d" data-page-node-id="tDlIEO5wZ7rGG44AB8qBTk">09-09</span><h3 data-page-node-id="uXOHnJvJoU01UqYcLkbFq5">Obsidian 写博客，图片路径是个绕不开的坑</h3></a>
+      <a class="post" href="#" data-page-node-id="bPVBtqrFAm6OODKyCCKQ2r"><span class="d" data-page-node-id="DU0LAxh3dQDqjFtat8feyG">09-08</span><h3 data-page-node-id="wGMF6Bncnk9F49F009ZV24">把 82 个高星个人博客扒了一遍之后</h3></a>
+    </section>
+
+    <a class="tile" href="#" data-page-node-id="IXqiePV5bMLOVLNnoWBqud">
+      <span class="badge" data-page-node-id="WlYAZajt56tDtaGgOWXALw">即将上线</span>
+      <div class="ico" data-page-node-id="Ff9RRFnsmIvAbD5lsmd4Rd">⌘</div>
+      <div class="t" data-page-node-id="HW0STvoUEixrQLz2sva9Qu">导航收藏</div>
+      <div class="s" data-page-node-id="PuVoz3pejBitTLC4T1HXcT">常用站点与工具的个人书签</div>
+    </a>
+
+    <a class="tile" href="#" data-page-node-id="SOQOkK3fhZNoYp6HBjsRlY">
+      <span class="badge" data-page-node-id="LPf05UEK0B78sOpJWoI4ZE">即将上线</span>
+      <div class="ico" data-page-node-id="UASN8hS3a7XRcbU3oDYc9E">⚙</div>
+      <div class="t" data-page-node-id="LzgRY6V3UeMxBh04jOpA5w">在线工具</div>
+      <div class="s" data-page-node-id="eemrhmA8T81E3BoHFL5XuJ">随身可用的纯前端小工具</div>
+    </a>
+
+    <section class="cell cats" data-page-node-id="ZfCx00Hv0hELyiio0UepxP">
+      <h2 data-page-node-id="cAChoFP01CXASK34vfkkaG">分类</h2>
+      <div class="cat-list" data-page-node-id="tPZINWOC4HmEOjZSZ6EvTS">
+        <a href="#" data-page-node-id="pXIuEYzP9isl29LUbusf3P">建站日志<b data-page-node-id="SSrJpCyV2CEVGlpfyqurxz">18</b></a>
+        <a href="#" data-page-node-id="eTILl7z6VhzfARt8mv7fPo">前端工程<b data-page-node-id="UnyDaIqb0hiK6JXH5rQHsd">11</b></a>
+        <a href="#" data-page-node-id="6mvI2IK4jzlXBsl3zs6E3t">学习笔记<b data-page-node-id="OL1NaN6ojGowN84YK7BxsO">7</b></a>
+        <a href="#" data-page-node-id="6B6AyzqtAcqiUZQcT4b4Sk">C 语言<b data-page-node-id="aJxLqqXsSXqBOWBG0RiQnq">4</b></a>
+        <a href="#" data-page-node-id="xTOg8g6zrFbZhnuQe7CfpN">随笔<b data-page-node-id="3dIRWWtnXqjMqK2qR1JBta">2</b></a>
+      </div>
+    </section>
+
+    <section class="cell tagcloud" data-page-node-id="s0yR3wRlXOepBAOy72DWYV">
+      <h2 data-page-node-id="bPKvlSPwxAhoFRxqOBWcZg">标签</h2>
+      <div class="cloud" data-page-node-id="tXDsyBetgLkQMZBeov2PNR">
+        <a href="#" class="t2" data-page-node-id="zJW91G85TUtdDvjoqXGqhs">Astro</a>
+        <a href="#" class="t3" data-page-node-id="E1JBU0eoYvq6OAdbbMYLDy">踩坑</a>
+        <a href="#" class="t5" data-page-node-id="nxKhbNyFwA4Fz1jAQtx0au">Obsidian</a>
+        <a href="#" class="t4" data-page-node-id="Q9R1PN4oAHK02QtFj1MLH5">Markdown</a>
+        <a href="#" class="t1" data-page-node-id="zsN7JLqoFrw6kBAxV3Ykf2">CSS</a>
+        <a href="#" class="t5" data-page-node-id="x0vOTcjaKfiew5alQkeuB2">建站</a>
+        <a href="#" class="t4" data-page-node-id="wf1rmLou4YiTCyUDG3uYQD">专升本</a>
+      </div>
+    </section>
+
+    <div class="status" data-page-node-id="DP36e8AUqLHTNx6igxmzf7">
+      <span class="l" data-page-node-id="T6qiyyaGP38wDjpuxDopaG">导航收藏夹和在线工具还在做，预计这周能上。</span>
+      <span class="r" data-page-node-id="VrxXnR1HKNmiguvgygCDxZ">更新于 2026-09-11</span>
+    </div>
+
+  </div>
+</div>
+
+<footer data-page-node-id="pE99gH6tAoHx8VF4FICm2x">Astro 7 · 纯静态 · 海内外双站</footer>
+</body>
+</html>

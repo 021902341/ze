@@ -1,0 +1,73 @@
+---
+import PostCard from './PostCard.astro';
+import type { Post } from '../utils/site';
+
+interface Crumb {
+  href: string;
+  label: string;
+}
+
+interface Props {
+  title: string;
+  sub?: string;
+  crumbs?: Crumb[];
+  posts: Post[];
+}
+
+const { title, sub, crumbs = [], posts } = Astro.props;
+---
+
+<main class="wrap">
+  {crumbs.length > 0 && (
+    <nav class="crumb">
+      {crumbs.map((c, i) => (
+        <>
+          {i > 0 && <span aria-hidden="true">/</span>}
+          <a href={c.href}>{c.label}</a>
+        </>
+      ))}
+    </nav>
+  )}
+
+  <header class="head">
+    <h1 class="page-title">{title}</h1>
+    {sub && <p class="page-sub">{sub}</p>}
+  </header>
+
+  <div class="list">
+    {posts.map((post) => <PostCard post={post} />)}
+  </div>
+
+  {posts.length === 0 && <div class="empty glass">这个下面还没有文章。</div>}
+</main>
+
+<style>
+  .wrap {
+    max-width: var(--content-w);
+    margin: 0 auto;
+    padding: 30px var(--shell-pad) 60px;
+  }
+
+  .crumb {
+    display: flex;
+    gap: 8px;
+    font-size: 12.5px;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+  }
+  .crumb a { color: var(--text-muted); text-decoration: none; }
+  .crumb a:hover { color: var(--primary-dark); }
+
+  .head { padding-bottom: 28px; }
+  .head .page-sub { margin-top: 10px; }
+  .head b { color: var(--text-deep); font-family: var(--mono); }
+
+  .list { display: flex; flex-direction: column; gap: 14px; }
+
+  .empty {
+    padding: 50px 30px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+</style>

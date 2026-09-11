@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="Q51Pgr1UQoj7wnBZnZUVyf">
+<head data-page-node-id="Vrc3iudoSZ3c8FunlPWZfh">
+<meta charset="UTF-8" data-page-node-id="kIH0GXZFBDx0KwqFOunQBh">
+<title>方案 A · 编辑式</title>
+<link rel="stylesheet" href="./fonts/lxgwwenkaigbscreen.css" data-page-node-id="i66uR8jHHl9C6ihmLWHA75">
+<style>
+:root{
+  --bg:#fff; --card:#fafafa; --ink:#4c4948; --ink-deep:#333; --ink-muted:#888;
+  --line:rgba(0,0,0,.85); --border:rgba(0,0,0,.08); --divider:rgba(0,0,0,.12);
+  --accent:#DF9193; --accent-dark:#C9787A; --radius:12px; --maxw:960px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:"LXGW WenKai Screen",STZhongsong,STKaiti,KaiTi,serif;
+  background:var(--bg); color:var(--ink); line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;opacity:.035;z-index:9;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 20px}
+
+nav{border-bottom:1px solid var(--divider)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;height:65px}
+.brand{font-size:21px;font-weight:400;letter-spacing:.04em;color:var(--ink-deep);text-decoration:none}
+.brand i{color:var(--accent);font-style:normal}
+.links{display:flex;gap:22px;font-size:14px}
+.links a{color:var(--ink);text-decoration:none;position:relative;padding-bottom:3px}
+.links a.on{color:var(--accent-dark)}
+.links a.on::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--accent)}
+
+.hero{padding:74px 0 40px}
+.hero .kicker{font-size:13px;color:var(--ink-muted);letter-spacing:.14em;margin-bottom:20px}
+.hero h1{
+  font-size:52px;line-height:1.28;font-weight:400;color:var(--ink-deep);
+  letter-spacing:.01em;margin-bottom:22px;
+}
+.hero h1 em{font-style:normal;border-bottom:2px dashed var(--accent);padding-bottom:2px}
+.hero .sub{font-size:15px;color:var(--ink-muted);max-width:34em}
+.hero .meta{margin-top:26px;padding-top:16px;border-top:1px dashed var(--divider);display:flex;gap:26px;font-size:13px;color:var(--ink-muted)}
+
+.sec-head{display:flex;align-items:center;gap:14px;margin:20px 0 22px}
+.sec-head h2{font-size:15px;font-weight:400;color:var(--ink-deep)}
+.sec-head h2::before{content:"";display:inline-block;width:7px;height:7px;background:var(--accent);transform:rotate(45deg);margin-right:9px;vertical-align:1px}
+.sec-head .rule{flex:1;height:1px;background:var(--divider)}
+.sec-head .more{font-size:13px;color:var(--ink-muted);text-decoration:none}
+
+.feature{
+  display:grid;grid-template-columns:1.35fr 1fr;gap:0;
+  border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--card);
+  margin-bottom:34px;
+}
+.feature .txt{padding:30px 32px}
+.feature .tag{font-size:12px;color:var(--accent-dark);border:1px solid rgba(223,145,147,.55);border-radius:6px;padding:2px 9px;display:inline-block;margin-bottom:16px}
+.feature h3{font-size:26px;line-height:1.42;font-weight:400;color:var(--ink-deep);margin-bottom:14px}
+.feature p{font-size:14px;color:var(--ink-muted);margin-bottom:20px}
+.feature .date{font-size:12.5px;color:#aaa;font-family:Menlo,Consolas,monospace}
+.feature .cover{
+  background:repeating-linear-gradient(45deg,#f3f0ee 0 12px,#efeae7 12px 24px);
+  border-left:1px dashed var(--divider);
+  display:flex;align-items:center;justify-content:center;
+  color:#c4bcb7;font-size:13px;letter-spacing:.1em;
+}
+
+.stream{display:flex;flex-direction:column}
+.item{
+  display:grid;grid-template-columns:112px 1fr;gap:22px;
+  padding:22px 4px;border-bottom:1px dashed var(--divider);
+  text-decoration:none;color:inherit;
+}
+.item:last-child{border-bottom:none}
+.item .d{font-size:12.5px;color:#aaa;font-family:Menlo,Consolas,monospace;padding-top:5px}
+.item h3{font-size:18px;font-weight:400;color:var(--ink-deep);line-height:1.5;margin-bottom:8px}
+.item p{font-size:13.5px;color:var(--ink-muted);line-height:1.7}
+.item .tags{margin-top:10px;display:flex;gap:8px;font-size:12px;color:var(--accent-dark)}
+
+.note{
+  margin:34px 0 0;padding:20px 24px;border:1px solid var(--line);border-radius:14px;background:var(--card);
+  transform:rotate(-1.2deg);display:flex;gap:16px;align-items:flex-start;
+}
+.note .pin{width:34px;height:34px;border-radius:50%;background:var(--accent);flex:0 0 auto;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px}
+.note div p{font-size:13.5px;color:var(--ink)}
+.note div span{font-size:12.5px;color:var(--ink-muted)}
+
+footer{margin-top:64px;border-top:1px solid var(--divider);padding:26px 0 44px;text-align:center;font-size:13px;color:#aaa}
+</style>
+</head>
+<body data-page-node-id="As3mFK9fvIYjSwSmMavUDM">
+
+<nav data-page-node-id="6qmgZeurebCHVp4kpCUICK">
+  <div class="wrap" data-page-node-id="o2EvncWtgS5IAoebqitHMc">
+    <a class="brand" href="#" data-page-node-id="Ifj51NVM1b7SA6G6FlA5mx">ze<i data-page-node-id="rkgKIrPPygCQAefoSdo7OP">.</i></a>
+    <div class="links" data-page-node-id="Cq02KXAOwoC21AlKnkQ2dP">
+      <a href="#" class="on" data-page-node-id="CiwKEE8KFBIBXqHk1oVHYo">首页</a><a href="#" data-page-node-id="ArAt5St9YfNBdVkHvRp4xz">博客</a><a href="#" data-page-node-id="2LLA8KX9f61OB65CnHjd6p">分类</a><a href="#" data-page-node-id="5ZGNr3MvSJdhmwPw12BMN8">标签</a><a href="#" data-page-node-id="rkW2NGZxauRRfy9DjPfMnV">关于</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap" data-page-node-id="gItPxjyDzrCRefdygegdfH">
+  <section class="hero" data-page-node-id="sZ8mflqVCOPecGkaGVDOVO">
+    <div class="kicker" data-page-node-id="dL6WF8CJYn3gaaYbwFjF7D">天津 · 软件工程 · 专升本备考中</div>
+    <h1 data-page-node-id="dNq1csNj1H8AA9FtoHNoCu">记录学习，<br data-page-node-id="u8JN6DwvkzmQHWXDRKJsN2">也记录<em data-page-node-id="TCrn96XKiFF2igclt4zAib">踩过的坑</em>。</h1>
+    <p class="sub" data-page-node-id="jRypHA0fFxVS7mlKwTCxKr">写代码、整理笔记、折腾自己的站点。这里放那些值得写下来的东西。</p>
+    <div class="meta" data-page-node-id="gBBJj7gOrc2gsuPjv91n0D"><span data-page-node-id="IHAMEVgeFaSB7j6mbwOhyr">42 篇文章</span><span data-page-node-id="fO32f4uxYKVdfFCsIxClWu">6 个分类</span><span data-page-node-id="hrxC2aQryJZOjUAmwhH1qf">21 个标签</span></div>
+  </section>
+
+  <div class="sec-head" data-page-node-id="CSFkOX9YEhhb5Sq1cejhoJ">
+    <h2 data-page-node-id="mHeKgXs7ouPPL0O5F7AEUp">精选</h2><span class="rule" data-page-node-id="GAAzNmEniGwjbYMwFkckTK"></span><a class="more" href="#" data-page-node-id="u3ULAiczoM4wzs71ROZWQz">全部文章 →</a>
+  </div>
+
+  <article class="feature" data-page-node-id="9XvvyzChUIGhNwnmTo9MOl">
+    <div class="txt" data-page-node-id="cbTu6FL5RVJKdWLocxuG7N">
+      <span class="tag" data-page-node-id="GsVzQJC4J7mVsZNzA0UE0q">建站日志</span>
+      <h3 data-page-node-id="FxAkNoSlwVrBx4tVFXPlLg">开张：为什么又开了一个站</h3>
+      <p data-page-node-id="GyKqzAOf698128UeRXjQ6L">第三个个人站了。这次不图好看，图能长期活下去 —— 说说这次的取舍，以及为什么把「不租服务器」写进了第一条规矩。</p>
+      <div class="date" data-page-node-id="uHAUn2pCoGGIqUOwhDS259">2026-09-11</div>
+    </div>
+    <div class="cover" data-page-node-id="BnxEoRG6Jz6ibIW4017Hm8">封面图</div>
+  </article>
+
+  <div class="sec-head" data-page-node-id="3gOM8DW9GkY890uQWGqFaE">
+    <h2 data-page-node-id="khdY0yqg2AcJA0gJHB89ix">最近更新</h2><span class="rule" data-page-node-id="R5VxfbYJD9CjGqJze7Llb0"></span>
+  </div>
+
+  <div class="stream" data-page-node-id="JcifDKVpQwFWubmeHq0PEH">
+    <a class="item" href="#" data-page-node-id="KOJnKx1dgsCxk4LejGLGbV">
+      <div class="d" data-page-node-id="LCk565CVPYVvTyFW1NWZTp">2026-09-10</div>
+      <div data-page-node-id="7ReWA08Ov3dzJDPm2uh4GM">
+        <h3 data-page-node-id="JymmZAEGnEMExm0uVReJ62">Astro 5 之后，内容层写法变了不少</h3>
+        <p data-page-node-id="O4gDxsN3340W4THXw2kl3R">defineCollection 必须带 loader，配置文件换了位置，连 zod 都不能从 astro:content 引了。</p>
+        <div class="tags" data-page-node-id="CvMlYKrwndET2QDxYoLM0h"><span data-page-node-id="EX30gy7dD5YnpHcc4WPfwF">#Astro</span><span data-page-node-id="F1VZamO9XIsIyoFtOaybV6">#踩坑</span></div>
+      </div>
+    </a>
+    <a class="item" href="#" data-page-node-id="NuEM4kFMdOA7kdDvkRybFt">
+      <div class="d" data-page-node-id="2UoAYEMAfare8TFNmLwM5R">2026-09-09</div>
+      <div data-page-node-id="h3uIFBSAh44R1LR5RO9eAH">
+        <h3 data-page-node-id="tuNaJNSlzAvuVHCfkfGQ9S">Obsidian 写博客，图片路径是个绕不开的坑</h3>
+        <p data-page-node-id="sjRUeCUmloURZHrs4NUz0y">![[图片]] 语法 Astro 不认。折腾了几种方案，最后选了最笨但最省心的那个。</p>
+        <div class="tags" data-page-node-id="fFg8j91D5SrnmD5qkTxkbm"><span data-page-node-id="tMoCox3tGaQgSzf0FsWwHY">#Obsidian</span><span data-page-node-id="gKlYDcTUDc9gwo0ZYoA4s6">#工作流</span></div>
+      </div>
+    </a>
+    <a class="item" href="#" data-page-node-id="zpf5qZRCKrd2ZzG6eF4bTS">
+      <div class="d" data-page-node-id="9A7aEibHBcGw2XHkXOkEx0">2026-09-08</div>
+      <div data-page-node-id="18RL7baiiCJwupUoLseDtu">
+        <h3 data-page-node-id="zieUvAEAl7MSSPymhnmESq">把 82 个高星个人博客扒了一遍之后</h3>
+        <p data-page-node-id="G2MQlADMIW0hADXTwb0JkB">Hugo 星标最多不代表最合适。按「颜值 / 省心 / 速度」三个维度重新排了一遍序。</p>
+        <div class="tags" data-page-node-id="jZNKaZSsrh3BZUvNmGyfJk"><span data-page-node-id="F6dntBNqgRAbR4D7hJIUls">#建站</span></div>
+      </div>
+    </a>
+  </div>
+
+  <div class="note" data-page-node-id="kKhDpU3OvnT7wK1vSH6ER2">
+    <span class="pin" data-page-node-id="FvQXTfG4gpz1ujbOCd8Wd1">zt</span>
+    <div data-page-node-id="L0R5BS5OI9HVZZfodTIFd8">
+      <p data-page-node-id="gZMGHdStVEY5r7igsm3JB4">导航收藏夹和在线工具还在做，预计这周能上。</p>
+      <span data-page-node-id="JbfjoM5mLc2FNp2PcmsAiX">—— 2026-09-11</span>
+    </div>
+  </div>
+</div>
+
+<footer data-page-node-id="dx5mlLmiJR7JTWrPEFh3jf">Astro 7 · 纯静态 · 海内外双站</footer>
+</body>
+</html>

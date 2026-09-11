@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="O2E60SGCef3wrsZoT2ya7N">
+<head data-page-node-id="kRU80eIAPHEoSJNxC8D1wO">
+<meta charset="UTF-8" data-page-node-id="3Xa8ctlIp36dgKLuw7spcJ">
+<title>最终版 · aiovtue 设计系统 × H+E 结构</title>
+<link rel="stylesheet" href="./fonts/lxgwwenkaigbscreen.css" data-page-node-id="ZoOjGC8tB9uGosQ9JWmdc4">
+<style>
+/* ============================================================
+   全部 token 取自线上 daily.yybb.us 实际生效的 CSS
+   ============================================================ */
+:root{
+  --primary:#DF9193;
+  --primary-light:#e5a5a6;
+  --primary-lighter:#eab9ba;
+  --primary-dark:#d67174;
+  --complement:#d6a29a;
+  --adjacent:#dfb391;
+  --pin:#e8b288;
+  --pin-border:#f4e6da;
+
+  --bg:#fff;
+  --bg-soft:#fafafa;
+  --text:#4c4948;
+  --text-muted:#888;
+  --text-deep:#333;
+  --border:rgba(0,0,0,.08);
+  --divider:rgba(0,0,0,.12);
+
+  --c-folder:#f5c518;
+  --c-tag:var(--primary);
+  --c-date:#3d6b7a;
+
+  --glass-bg:color-mix(in srgb,#fff 90%,transparent);
+  --glass-bg-strong:color-mix(in srgb,#fff 94%,transparent);
+  --glass-border:color-mix(in srgb,#fff 70%,rgba(0,0,0,.1));
+  --glass-blur:12px;
+  --glass-radius:14px;
+  --glass-shadow:0 6px 22px color-mix(in srgb,#000 7%,transparent);
+
+  --radius:12px;
+  --navbar-h:58px;
+  --font:"LXGW WenKai Screen",STZhongsong,STKaiti,KaiTi,serif;
+  --mono:Menlo,Consolas,"Courier New",monospace;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.75;
+  -webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.028;z-index:99;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='150' height='150'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>")}
+
+/* 玻璃卡（线上真实写法） */
+.glass{
+  background:var(--glass-bg);
+  border:1px solid var(--glass-border);
+  border-radius:var(--glass-radius);
+  box-shadow:var(--glass-shadow);
+  backdrop-filter:blur(var(--glass-blur)) saturate(1.15);
+  -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(1.15);
+}
+
+/* ---------- 顶栏 58px 纯白 ---------- */
+.navbar{height:var(--navbar-h);background:#fff;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;padding:0 26px;position:relative;z-index:10}
+.brand{font-size:19px;color:var(--text-deep);letter-spacing:.04em;text-decoration:none}
+.brand i{font-style:normal;color:var(--primary)}
+.navlinks{display:flex;gap:4px;font-size:14px}
+.navlinks a{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:9px;
+  color:var(--text);text-decoration:none;transition:background .3s}
+.navlinks a:hover{background:color-mix(in srgb,var(--primary) 10%,transparent)}
+.navlinks a.on{color:var(--primary-dark)}
+.ni{width:13px;height:13px;flex:0 0 auto;display:inline-block}
+.ni.home{background:#e03131;clip-path:polygon(50% 0,100% 42%,82% 42%,82% 100%,18% 100%,18% 42%,0 42%)}
+.ni.doc{background:#f03e3e;border-radius:2px}
+.ni.flower{background:#ff6b6b;border-radius:50% 0 50% 50%}
+.ni.person{background:#ff922b;border-radius:50% 50% 40% 40%}
+.ni.bell{background:#fab005;clip-path:polygon(50% 0,78% 30%,78% 72%,100% 88%,0 88%,22% 72%,22% 30%)}
+.ni.link{background:#fcc419;border-radius:2px}
+.ni.info{background:#ffd43b;border-radius:50%}
+.navr{display:flex;gap:16px;color:var(--text-muted);font-size:13px}
+
+/* ---------- 布局 ---------- */
+.shell{display:grid;grid-template-columns:322px 1fr;min-height:calc(100vh - var(--navbar-h))}
+
+/* 左：整高图片面板（H 的骨架，aiovtue 的柔和处理） */
+.photo{position:relative;overflow:hidden;
+  background-image:url('./hero.jpg');background-size:cover;background-position:center 30%;
+  display:flex;align-items:center;justify-content:center}
+.photo::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(30,24,22,.42) 0%,rgba(30,24,22,.30) 45%,rgba(30,24,22,.62) 100%)}
+.photo .id{position:relative;z-index:3;text-align:center;color:#fff;padding:0 28px;width:100%}
+.photo .avatar{width:78px;height:78px;border-radius:50%;margin:0 auto 16px;
+  background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.55);
+  display:flex;align-items:center;justify-content:center;font-size:24px;
+  backdrop-filter:blur(8px)}
+.photo .name{font-size:27px;letter-spacing:.07em;line-height:1.3;margin-bottom:6px}
+.photo .role{font-size:12.5px;opacity:.85;letter-spacing:.04em;line-height:1.85}
+/* 一言胶囊：深色玻璃，社交图标内含 —— 线上 hero 的做法 */
+.photo .hitokoto{margin-top:22px;display:inline-flex;flex-direction:column;gap:9px;
+  padding:11px 18px 9px;border-radius:13px;
+  background:rgba(28,24,23,.42);border:1px solid rgba(255,255,255,.18);
+  backdrop-filter:blur(10px);max-width:100%}
+.photo .hitokoto p{font-size:12.5px;line-height:1.7;opacity:.95}
+.photo .hico{display:flex;gap:11px;justify-content:center;font-size:12px;opacity:.86}
+.photo .navv{margin:26px auto 0;width:180px;display:flex;flex-direction:column;gap:2px;text-align:left}
+.photo .navv a{display:flex;align-items:center;gap:9px;padding:7px 12px;border-radius:9px;
+  color:rgba(255,255,255,.88);text-decoration:none;font-size:13.5px}
+.photo .navv a.on{background:rgba(255,255,255,.2);color:#fff}
+.photo .navv a .ni{opacity:.95}
+
+/* 右：侧栏轨道 + 主内容 */
+.work{display:grid;grid-template-columns:236px 1fr;gap:22px;padding:24px 26px 50px;align-content:start}
+
+/* 侧栏卡（线上 home-list-sidebar-card） */
+.rail{display:flex;flex-direction:column;gap:14px;position:sticky;top:20px}
+.sc{padding:16px 18px}
+.sc h3{font-size:12.5px;font-weight:400;color:var(--text-muted);letter-spacing:.09em;margin-bottom:12px;
+  display:flex;align-items:center;gap:8px}
+.sc h3::before{content:"";width:6px;height:6px;background:var(--primary);transform:rotate(45deg)}
+.stats{display:flex;text-align:center;gap:6px;padding:4px 0 12px;border-bottom:1px dashed var(--divider)}
+.stats div{flex:1}
+.stats b{display:block;font-size:19px;font-weight:400;color:var(--primary-dark);line-height:1.35;font-family:var(--mono)}
+.stats span{font-size:11px;color:var(--text-muted)}
+.sc .socials{display:flex;gap:8px;justify-content:center;margin-top:12px;font-size:12px;color:var(--text-muted)}
+.rt{font-family:var(--mono);font-size:12px;color:var(--c-date);text-align:center;padding:2px 0}
+.quick{display:flex;flex-direction:column}
+.quick a{display:flex;align-items:center;justify-content:space-between;padding:8px 0;
+  border-bottom:1px dashed var(--divider);font-size:13.5px;color:var(--text-deep);text-decoration:none}
+.quick a:last-child{border-bottom:none;padding-bottom:0}
+.quick a:hover{color:var(--primary-dark)}
+.quick a b{font-weight:400;font-size:10.5px;color:var(--primary-dark);
+  border:1px solid color-mix(in srgb,var(--primary) 50%,transparent);border-radius:5px;padding:1px 6px}
+.quick a i{font-style:normal;color:var(--text-muted);font-size:12px}
+.notice{font-size:12.5px;color:var(--text-muted);line-height:1.75}
+.notice b{color:var(--primary-dark);font-weight:400}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips a{font-size:12px;padding:3px 10px;border-radius:7px;text-decoration:none;
+  color:var(--text-deep);background:color-mix(in srgb,var(--primary) 9%,transparent);
+  border:1px solid color-mix(in srgb,var(--primary) 22%,transparent)}
+.chips a b{color:var(--primary-dark);font-weight:400;margin-left:4px;font-size:11px}
+.tags{display:flex;flex-wrap:wrap;gap:10px;align-items:baseline}
+.tags a{color:var(--primary-dark);text-decoration:none}
+.t1{font-size:12.5px}.t2{font-size:16px}.t3{font-size:20px}.t4{font-size:13.5px}.t5{font-size:18px}
+
+/* 主内容 */
+main{min-width:0;display:flex;flex-direction:column;gap:16px}
+/* 精选轮播（线上 home-list-featured） */
+.feat{position:relative;height:236px;overflow:hidden;padding:0}
+.feat .cover{position:absolute;inset:0;background:repeating-linear-gradient(45deg,#f4f1ef 0 16px,#efeae7 16px 32px)}
+.feat .veil{position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,255,255,.96) 0%,rgba(255,255,255,.86) 46%,rgba(255,255,255,.2) 100%)}
+.feat .body{position:relative;z-index:2;padding:30px 34px;max-width:64%}
+.feat .pin{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:#8a6a2f;
+  background:var(--pin-border);border:1px solid var(--pin);border-radius:6px;padding:2px 9px;margin-bottom:13px}
+.feat h2{font-size:25px;font-weight:400;color:var(--text-deep);line-height:1.45;margin-bottom:11px}
+.feat p{font-size:13px;color:var(--text-muted);line-height:1.75}
+.feat .nav{position:absolute;right:16px;bottom:16px;z-index:3;display:flex;gap:8px}
+.feat .nav i{width:28px;height:28px;border-radius:8px;background:var(--glass-bg-strong);
+  border:1px solid var(--border);display:flex;align-items:center;justify-content:center;
+  font-style:normal;font-size:12px;color:var(--text-muted)}
+.feat .dots{position:absolute;left:34px;bottom:18px;z-index:3;display:flex;gap:5px}
+.feat .dots i{width:6px;height:6px;border-radius:50%;background:var(--divider)}
+.feat .dots i.on{background:var(--primary);width:16px;border-radius:3px}
+
+/* 文章卡（线上 sakura-post-card 的真实结构） */
+.posts{display:flex;flex-direction:column;gap:14px}
+.pc{display:grid;grid-template-columns:1fr 46%;min-height:172px;overflow:hidden;
+  transition:border-color .3s var(--ease),box-shadow .3s var(--ease)}
+.pc:hover{border-color:color-mix(in srgb,var(--primary) 45%,var(--glass-border));
+  box-shadow:0 10px 30px color-mix(in srgb,#000 10%,transparent)}
+.pc .ct{padding:20px 30px;display:flex;flex-direction:column;justify-content:center;min-width:0}
+.pc .dt{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--c-date);margin-bottom:10px}
+.pc .dt .ic{width:12px;height:12px;border-radius:50%;border:1.4px solid var(--c-date);position:relative}
+.pc .dt .ic::after{content:"";position:absolute;left:4.4px;top:2.6px;width:1.3px;height:3.6px;background:var(--c-date)}
+.pc h3{font-size:19px;font-weight:400;color:var(--text-deep);line-height:1.5;margin-bottom:10px}
+.pc .tax{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12.5px;margin-bottom:9px}
+.pc .tax .folder{display:flex;align-items:center;gap:5px;color:var(--c-folder)}
+.pc .tax .folder .ic{width:11px;height:9px;background:var(--c-folder);border-radius:1.5px 1.5px 1px 1px;position:relative}
+.pc .tax .folder .ic::before{content:"";position:absolute;left:0;top:-2.5px;width:5px;height:3px;background:var(--c-folder);border-radius:1.5px 1.5px 0 0}
+.pc .tax .tag{display:flex;align-items:center;gap:5px;color:var(--c-tag)}
+.pc .tax .tag .ic{width:10px;height:10px;background:var(--c-tag);border-radius:2px;transform:rotate(45deg) scale(.86)}
+.pc .ex{font-size:12.5px;color:var(--text-muted);line-height:1.7}
+.pc .ph{background:repeating-linear-gradient(45deg,#f4f1ef 0 15px,#efeae7 15px 30px);
+  border-left:1px solid var(--border);display:flex;align-items:center;justify-content:center;
+  color:#c9c2bd;font-size:11.5px;letter-spacing:.1em}
+.pc:nth-child(2n) .ph{background:repeating-linear-gradient(45deg,#f1eef3 0 15px,#ece7f0 15px 30px)}
+
+.status{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:15px 22px;
+  background:color-mix(in srgb,var(--primary) 12%,transparent);
+  border:1px solid color-mix(in srgb,var(--primary) 30%,transparent);
+  border-radius:var(--glass-radius);font-size:13.5px;color:var(--text)}
+.status .r{font-family:var(--mono);font-size:12px;color:var(--primary-dark);white-space:nowrap}
+
+@media(max-width:1080px){
+  .shell{grid-template-columns:1fr}
+  .photo{min-height:320px;padding:40px 0}
+  .work{grid-template-columns:1fr}
+  .rail{position:static;flex-direction:row;flex-wrap:wrap}
+  .rail .sc{flex:1 1 220px}
+  .pc{grid-template-columns:1fr}
+  .pc .ph{display:none}
+}
+</style>
+</head>
+<body data-page-node-id="6TQwuEcUB3cNsHJ57mEtRq">
+
+<nav class="navbar" data-page-node-id="npxAsmBOgnD0nxlVIRVvUT">
+  <a class="brand" href="#" data-page-node-id="GbjRQqKCbplGoanJNO1D4v">AIOVTUE<i data-page-node-id="Hv6vDzXGy0CP5Hig2xITNb">-</i>ze</a>
+  <div class="navlinks" data-page-node-id="yMzR4GMvJaUpTPavB93x8n">
+    <a href="#" class="on" data-page-node-id="EWeVgZFtVjlyahUzDCvnJN"><i class="ni home" data-page-node-id="H5E8A5dPmhAXy4PiDCjCAl"></i>首页</a>
+    <a href="#" data-page-node-id="LDB0ZQaLgEwtdUATi3karR"><i class="ni doc" data-page-node-id="q4xUWnj4Gx7KwhcIirHeWx"></i>文章</a>
+    <a href="#" data-page-node-id="E2SjH2KvIErIPk6Jhyq3mg"><i class="ni flower" data-page-node-id="tMoFAF3Ivc7ocOwx37Hxie"></i>周刊</a>
+    <a href="#" data-page-node-id="9kceQr7YB9zjQ0AyBKcsJg"><i class="ni person" data-page-node-id="6US1KbYBGQrzAgGvROdkZ3"></i>个人</a>
+    <a href="#" data-page-node-id="vu51PMQ07lVSpJwHi6LzTb"><i class="ni bell" data-page-node-id="6Wt8tJCpaHD5egpdMUPIWq"></i>留言</a>
+    <a href="#" data-page-node-id="UygpfcgrbAnR8jWKUGtLGu"><i class="ni link" data-page-node-id="jmO3FisVwxniA5z6aGJkoZ"></i>友链</a>
+    <a href="#" data-page-node-id="xaqU9RczgDDQYB5m9st5Fo"><i class="ni info" data-page-node-id="30rcSBVx56ERXsvJ8Bv5gK"></i>关于</a>
+  </div>
+  <div class="navr" data-page-node-id="ZTebAYeAJ65aOG0oWQRFW3"><span data-page-node-id="tH4RU8HaKOJPB40hizLvG0">搜索</span><span data-page-node-id="vAyJKOFxcnmHCdSIfwyEzi">GitHub</span><span data-page-node-id="TIcIuJHhT8cPJMQHoz0dvb">暗色</span></div>
+</nav>
+
+<div class="shell" data-page-node-id="cq1UNLbVwQfmd0GCRGeEdR">
+
+  <div class="photo" data-page-node-id="6wl2ajzzbzkaOjNTqXNymA">
+    <div class="id" data-page-node-id="APsvaPq57116Iln1Fw2Ani">
+      <div class="avatar" data-page-node-id="n87w2yCEMc6JlBkHcX3llV">ze</div>
+      <div class="name" data-page-node-id="4A2PVAMJSw6Ws5MqAHfRKv">李雨泽</div>
+      <div class="role" data-page-node-id="XAAn1DQAVmiLHX7NxkgXiC">天津 · 软件工程<br data-page-node-id="fvFAvkHXDHZHHBXWFHAbg3">专升本备考中</div>
+
+      <div class="hitokoto" data-page-node-id="55kLflpBDwCrhCpZieNpOR">
+        <p data-page-node-id="61BDSFiLqA5oXELvdSD7HV">「 当你想放弃的时候，想想为什么当初坚持走到了这里 」</p>
+        <div class="hico" data-page-node-id="AFbESDXiPAHo1nWk56T1gz"><span data-page-node-id="rFQtn5FaghNLxA80Kf1DXn">GH</span><span data-page-node-id="xpDw1hxARE6wlnpeTClebb">Mail</span><span data-page-node-id="p2WIlUsSQUt0cL4nqPSNVB">RSS</span><span data-page-node-id="DhAWtG0ZOoSXaB6F5YxnqM">Bili</span><span data-page-node-id="d3rNqZ69ziZFwTFBQBIzip">QQ</span></div>
+      </div>
+
+      <div class="navv" data-page-node-id="xanap9KhLGk2uooYWz7oJD">
+        <a href="#" class="on" data-page-node-id="DQKxFzUGexz1MfiFBwieDI"><i class="ni home" data-page-node-id="uF6vGI3yjUOtv1pmGxk8AY"></i>首页</a>
+        <a href="#" data-page-node-id="bOMmNkkaEaOcRGf7VHmZoI"><i class="ni doc" data-page-node-id="UhGEpcZfgd2db7abB3JEQf"></i>归档</a>
+        <a href="#" data-page-node-id="dsO6XtKUXI8T2MlJ4AlqEH"><i class="ni flower" data-page-node-id="j23ddcROASAbEmpMM0nu3S"></i>分类</a>
+        <a href="#" data-page-node-id="Eqh2rMIMNCiYrBgJE50cye"><i class="ni bell" data-page-node-id="fIPYox1hqRGaC0HpYnv6yY"></i>标签</a>
+        <a href="#" data-page-node-id="M7tNjOG2ODMbAv90mDq6Zs"><i class="ni link" data-page-node-id="lOo44AVYunVReOPxB8JwNU"></i>导航收藏</a>
+        <a href="#" data-page-node-id="FHnVR8JnfXFhRiRmYzlF9R"><i class="ni info" data-page-node-id="vzp14YYBuNP8SyNTNHAswc"></i>关于</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="work" data-page-node-id="nhQhlImFvSNe2sB3tBtNUD">
+
+    <aside class="rail" data-page-node-id="FBI7mOgqxfNZvd0C5iHQfi">
+      <div class="sc glass" data-page-node-id="XnpUmMuevu2pmHjfWeIQmx">
+        <h3 data-page-node-id="QuVEI4CXjEClMnA8kGsepZ">站点信息</h3>
+        <div class="stats" data-page-node-id="KAqMsEoLyEf1i9nPutVcY5">
+          <div data-page-node-id="CthlXGvi4bTIzbIwRT8mrN"><b data-page-node-id="Gy3pQcll7FxHNSu5caG4T5">42</b><span data-page-node-id="W9jMZvNlwgPHkfPsufoTs1">文章</span></div>
+          <div data-page-node-id="hMTLXh4xfs4FKhF8HSr1Bz"><b data-page-node-id="OYGqAV3zHSHWMufaDILErC">6</b><span data-page-node-id="Mzaq7i1TNRjAP0VTPjPJiH">分类</span></div>
+          <div data-page-node-id="rLwWGTB5R2pjUbq0RQjozM"><b data-page-node-id="GxwBAa83tDIaoGHB2uRR7M">21</b><span data-page-node-id="MZFiA8cHtDBykRPKi2pMc8">标签</span></div>
+        </div>
+        <div class="socials" data-page-node-id="GGxkPmCvkulCEncPIRhSOi"><span data-page-node-id="Dt25r9BwdOJFOp9pAUNra8">GitHub</span><span data-page-node-id="7Oc0uS8PhTKwbxUCJNSYdt">Mail</span><span data-page-node-id="Nf6Zh8C6SnJJHvpfD1dNBL">RSS</span></div>
+      </div>
+
+      <div class="sc glass" data-page-node-id="8K3lw2yzwjkiejZIGPB5JP">
+        <h3 data-page-node-id="1cxUO2o6DJdCCsPVFutHwx">已运行</h3>
+        <div class="rt" data-page-node-id="V88UIHlYlU4QNNFguMoCzd">186 天 04:21:07</div>
+      </div>
+
+      <div class="sc glass" data-page-node-id="6Pb8n7nBnrtc89YD1ivSZM">
+        <h3 data-page-node-id="g9mBehMEKw41Glc2JeQEF3">快捷入口</h3>
+        <div class="quick" data-page-node-id="6WC7TVXGoN74RfOxnOQ97y">
+          <a href="#" data-page-node-id="OYlw4NAgh0IgGpScveXqjr">导航收藏 <b data-page-node-id="W5lWgXOGGkuOZLWACLDyzy">即将上线</b></a>
+          <a href="#" data-page-node-id="7eqQDclSRWeGEHBuxLSmfP">在线工具 <b data-page-node-id="gjJ63M7SqJ2dtjPvDkfRpz">即将上线</b></a>
+          <a href="#" data-page-node-id="E7KUDgrevOiwb864n4Bset">建站选型榜单 <i data-page-node-id="72FsJGqyH7W6Bu3Eaf6J3H">82 →</i></a>
+        </div>
+      </div>
+
+      <div class="sc glass" data-page-node-id="DaYaYTKeA9pqMgF7UjWNhS">
+        <h3 data-page-node-id="7wZZOjVb01Wu0YXipzZMAt">公告</h3>
+        <p class="notice" data-page-node-id="tHryFpoYDrOYjW9ISGSAao">博客模块已上线，<b data-page-node-id="mP5180kTNU9mS2o1EMo9cH">导航收藏夹</b>和<b data-page-node-id="A2aXRFeG3bJzNiaGiZf0yo">在线工具</b>还在做，预计这周能上。</p>
+      </div>
+
+      <div class="sc glass" data-page-node-id="4S03GjZxXZkMpOGkOjl952">
+        <h3 data-page-node-id="z8ZiUzNiNPiaCmmvpoDAWD">分类</h3>
+        <div class="chips" data-page-node-id="UT9O9Xk4f9Rw1bzJDLz07p">
+          <a href="#" data-page-node-id="vhGdcbu7AUOVlhc0soL9NT">建站日志<b data-page-node-id="LV0zcC0wxhsI9NkiRUTLz2">18</b></a>
+          <a href="#" data-page-node-id="WrrUA1HErUwxZQ5VMiRso2">前端工程<b data-page-node-id="0NwqxmEzPaUoMwXS62r2N7">11</b></a>
+          <a href="#" data-page-node-id="lZlnBAFYw5sOcnOTxyzLyC">学习笔记<b data-page-node-id="RbuUcn4D1MTnbMqB1gO72X">7</b></a>
+          <a href="#" data-page-node-id="Fq5XYSIiktC4BSacEm6plR">随笔<b data-page-node-id="EzNOUM9fnhnc5Ysqlcf6i5">2</b></a>
+        </div>
+      </div>
+
+      <div class="sc glass" data-page-node-id="FXgLlgjVplOTip6JXUFgZu">
+        <h3 data-page-node-id="OOI9whT8OfhM8ps3usRFSW">标签</h3>
+        <div class="tags" data-page-node-id="uQVEPiGGYsth051jYBiIuL">
+          <a href="#" class="t2" data-page-node-id="yYT0MACoeuGsgA6ixy7fN0">Astro</a>
+          <a href="#" class="t3" data-page-node-id="vewg2hYH9bzGs8cLmoe1I0">踩坑</a>
+          <a href="#" class="t5" data-page-node-id="gF5omPF2QCLmJSQd4UhBPS">Obsidian</a>
+          <a href="#" class="t4" data-page-node-id="gsIHdLtdPAvZJdjgNtrxEt">建站</a>
+        </div>
+      </div>
+    </aside>
+
+    <main data-page-node-id="2RA9xLUKNK2Yd76puOGScW">
+
+      <article class="feat glass" data-page-node-id="bA2T2TBfcM5eskTqkETULG">
+        <div class="cover" data-page-node-id="xIpXed7A51gUDTA2uTSbdE"></div>
+        <div class="veil" data-page-node-id="FhH0vTBpShAuACLZl7F2XQ"></div>
+        <div class="body" data-page-node-id="wjWldRuQhqxbZ4NOIY9Xw7">
+          <span class="pin" data-page-node-id="CYawLw6h5gEJH8OPYkHWbx">◆ 置顶</span>
+          <h2 data-page-node-id="Ak5JJjFatH6OxDsCEV4rdJ">开张：为什么又开了一个站</h2>
+          <p data-page-node-id="JE0hfw61nBZkNggr7JlhTh">第三个个人站了。这次不图好看，图能长期活下去 —— 说说这次的取舍，以及为什么把「不租服务器」写进了第一条规矩。</p>
+        </div>
+        <div class="dots" data-page-node-id="LBa5dJUkCdvZug4ivzxyg5"><i class="on" data-page-node-id="0ENnjlHqPe9durU0QQs8rV"></i><i data-page-node-id="DHL6avHLh74biEosbD3qeU"></i><i data-page-node-id="J89Zv29FEF5m5XLr6jGGDD"></i><i data-page-node-id="TqBxeuVreCk6XRWJMRHGkm"></i></div>
+        <div class="nav" data-page-node-id="Chww9KdnXPy1w8XUmfZoz7"><i data-page-node-id="KVTpvc8BHe4slEnPFz84Xl">‹</i><i data-page-node-id="MbqATGcRMayXiA0L6AVVDo">›</i></div>
+      </article>
+
+      <div class="posts" data-page-node-id="lvAYbhGchvkpBNAU8pQ9uM">
+
+        <article class="pc glass" data-page-node-id="W5JpzGXZG5zDyhpTbj1lX4">
+          <div class="ct" data-page-node-id="MmZJlhpoJoJB0P1IksmTEm">
+            <div class="dt" data-page-node-id="skKT5g1usA440W2hrGTXIy"><span class="ic" data-page-node-id="y2bJScG4VWMXM5rWgt2NaY"></span>编辑于 2026-09-10</div>
+            <h3 data-page-node-id="lETLBbiag4BGTFqAxQ7dRm">Astro 5 之后，内容层写法变了不少</h3>
+            <div class="tax" data-page-node-id="aJsAnDOQx0AjzhN5jBLJS0">
+              <span class="folder" data-page-node-id="VbUV2plftpYx0f5KEsbjt8"><span class="ic" data-page-node-id="GB6xt8mj5mmFmG3ufynNAC"></span>前端工程</span>
+              <span class="tag" data-page-node-id="PA5Jjq4UlAIbp2p8rtd3FO"><span class="ic" data-page-node-id="VNLmEAszljp4scLuLpbfJn"></span>Astro · 踩坑 · Markdown</span>
+            </div>
+            <p class="ex" data-page-node-id="lMdzcFzZsdVERSXgeuO21T">defineCollection 必须带 loader，配置文件换了位置，连 zod 都不能从 astro:content 引了。</p>
+          </div>
+          <div class="ph" data-page-node-id="Voeb82oi9DcQ94MPJbXK09">封面图</div>
+        </article>
+
+        <article class="pc glass" data-page-node-id="r6k3nXRCBlLv8drq8lyFH2">
+          <div class="ct" data-page-node-id="DRylsePaJN9HkqtwnfoOcv">
+            <div class="dt" data-page-node-id="dLBxzq3RgVjUBZ6sSx5J3D"><span class="ic" data-page-node-id="PSYdKTEZf9ngpeEHRX7x7y"></span>编辑于 2026-09-09</div>
+            <h3 data-page-node-id="ayFnnGINPbfrx2CMHgv7pB">Obsidian 写博客，图片路径是个绕不开的坑</h3>
+            <div class="tax" data-page-node-id="76BUPmFhh1GIUrQk2Kfmkh">
+              <span class="folder" data-page-node-id="h3CXoieQyI3fhUXSCMYwuZ"><span class="ic" data-page-node-id="alPMHPnaAwel2pe4hi2LdM"></span>建站日志</span>
+              <span class="tag" data-page-node-id="zar0Rg1CnNb1mSHz2PGc4U"><span class="ic" data-page-node-id="61m1214EC4FMCASIANY58R"></span>Obsidian · 工作流</span>
+            </div>
+            <p class="ex" data-page-node-id="7TmIG5hpD92OL8JiaWl1n4">![[图片]] 语法 Astro 不认。折腾了几种方案，最后选了最笨但最省心的那个。</p>
+          </div>
+          <div class="ph" data-page-node-id="XSANzlpJY1viKMTxZYVL3r">封面图</div>
+        </article>
+
+        <article class="pc glass" data-page-node-id="laGEroLpdGVclw35K4gWNj">
+          <div class="ct" data-page-node-id="3nopGgB2s9BOi8WqI0B1EE">
+            <div class="dt" data-page-node-id="91ap5u4IGbXgJdKb7kBkzM"><span class="ic" data-page-node-id="bPS5LAF58tLCa7yPL5GfCs"></span>编辑于 2026-09-08</div>
+            <h3 data-page-node-id="dpLNDc2QgRbT1t0JHWUwJM">把 82 个高星个人博客扒了一遍之后</h3>
+            <div class="tax" data-page-node-id="zh2glLHuZLcMtOZjBm3DtS">
+              <span class="folder" data-page-node-id="uVJ59gDGYLaFVDPRdusYg9"><span class="ic" data-page-node-id="nHHYvaOh3LBWDK6x9ECRo4"></span>建站日志</span>
+              <span class="tag" data-page-node-id="M4QsALxVOKVBOBwkrwVZvk"><span class="ic" data-page-node-id="Rd8bMCort9GH6yuJBocfgM"></span>建站 · 选型</span>
+            </div>
+            <p class="ex" data-page-node-id="ns0tnNM6Vc6pxu3fhdPnAh">Hugo 星标最多不代表最合适。按「颜值 / 省心 / 速度」三个维度重新排了一遍序。</p>
+          </div>
+          <div class="ph" data-page-node-id="ueg1WVckT026mDAedLBwly">封面图</div>
+        </article>
+
+      </div>
+
+      <div class="status" data-page-node-id="TXWJllIksIkdWCbh7UECdW">
+        <span data-page-node-id="zYm2VhSdKh8CmT8IB3kePx">导航收藏夹和在线工具还在做，预计这周能上。</span>
+        <span class="r" data-page-node-id="tEbIS0IJnYIRhTsm9sRVYH">2026-09-11</span>
+      </div>
+
+    </main>
+
+  </div>
+</div>
+
+</body>
+</html>

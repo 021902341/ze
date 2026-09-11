@@ -1,6 +1,5 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import SiteHeader from '../../../components/SiteHeader.astro';
 import { getPosts, countBy, tagHref } from '../../../utils/site';
 
 const posts = await getPosts();
@@ -10,82 +9,68 @@ const total = posts.reduce((s, p) => s + p.data.tags.length, 0);
 ---
 
 <BaseLayout title="标签 · ze" description="按标签浏览全部文章">
-  <SiteHeader />
-
-  <main class="shell">
-    <section class="page-head">
-      <h1 class="grad-text">标签</h1>
-      <p class="sub">
+  <main class="wrap">
+    <header class="head">
+      <h1 class="page-title">标签</h1>
+      <p class="page-sub">
         共 <b>{tags.length}</b> 个标签，累计引用 <b>{total}</b> 次 —— 字号越大出现得越多
       </p>
-    </section>
+    </header>
 
     <section class="cloud glass">
       {tags.map(([name, n]) => (
-        <a
-          class="tag"
-          href={tagHref(name)}
-          style={`--w:${(n / max).toFixed(2)}`}
-        >
-          {name}<span class="n">{n}</span>
+        <a href={tagHref(name)} style={`font-size:${(12.5 + (n / max) * 7).toFixed(1)}px`}>
+          <span class="ic-tag" aria-hidden="true"></span>{name}<em>{n}</em>
         </a>
       ))}
     </section>
 
-    {tags.length === 0 && <p class="empty">还没有标签。</p>}
+    {tags.length === 0 && <div class="empty glass">还没有标签。</div>}
   </main>
 </BaseLayout>
 
 <style>
-  .page-head { padding: 34px 0 26px; }
-
-  h1 {
-    margin: 0 0 12px;
-    font-size: clamp(38px, 7vw, 62px);
-    font-weight: 800;
-    letter-spacing: -.035em;
-    line-height: 1.05;
+  .wrap {
+    max-width: var(--content-w);
+    margin: 0 auto;
+    padding: 40px var(--shell-pad) 60px;
   }
 
-  .sub { margin: 0; color: var(--text-2); font-size: 14px; }
-  .sub b { color: var(--text-1); font-family: var(--font-mono); }
+  .head { text-align: center; padding-bottom: 30px; }
+  .head .page-sub { margin-top: 12px; }
+  .head b { color: var(--text-deep); font-family: var(--mono); }
 
   .cloud {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    gap: 10px;
-    padding: 30px 28px;
-    margin-bottom: 60px;
-  }
-
-  .tag {
-    display: inline-flex;
     align-items: baseline;
-    gap: 6px;
-    padding: 7px 15px;
-    border-radius: 11px;
-    text-decoration: none;
-    color: #D9C4FF;
-    background: rgba(176, 125, 255, .12);
-    border: 1px solid rgba(176, 125, 255, .24);
-    font-weight: 600;
-    font-size: calc(12.5px + var(--w) * 7px);
-    transition: background .18s, color .18s, border-color .18s, transform .18s;
+    gap: 16px;
+    padding: 30px 28px;
   }
 
-  .tag:hover {
-    background: rgba(176, 125, 255, .26);
-    border-color: rgba(176, 125, 255, .55);
-    color: #fff;
+  .cloud a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--primary-dark);
+    text-decoration: none;
+    transition: color var(--t) var(--ease), transform var(--t) var(--ease);
+  }
+  .cloud a:hover {
+    color: var(--primary);
     transform: translateY(-2px);
   }
-
-  .tag .n {
-    font-family: var(--font-mono);
+  .cloud a em {
+    font-style: normal;
+    font-family: var(--mono);
     font-size: 11px;
-    opacity: .6;
+    color: var(--text-muted);
   }
 
-  .empty { padding: 60px 0; text-align: center; color: var(--text-3); }
+  .empty {
+    padding: 50px 30px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
 </style>

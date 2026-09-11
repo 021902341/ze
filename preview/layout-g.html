@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>方案 G · 极简索引</title>
+<link rel="stylesheet" href="./base.css">
+<style>
+:root{--maxw:900px}
+
+.strip{height:168px;display:flex;align-items:flex-end}
+.strip .inner{position:relative;z-index:3;color:#fff;padding:0 0 26px;text-align:left}
+.strip .inner .k{font-size:12px;letter-spacing:.22em;opacity:.8}
+.strip .wave svg{height:42px}
+
+.opening{padding:52px 0 40px;border-bottom:1px solid var(--line)}
+.opening h1{font-size:52px;font-weight:400;line-height:1.24;letter-spacing:.02em;color:var(--ink-deep);margin-bottom:20px}
+.opening h1 em{font-style:normal;color:var(--accent)}
+.opening p{font-size:15.5px;color:var(--ink-muted);max-width:32em;line-height:1.9}
+.opening .kv{display:flex;gap:36px;margin-top:30px;font-size:13px;color:var(--ink-faint);font-family:var(--mono)}
+.opening .kv b{color:var(--accent-dark);font-weight:400;font-size:17px;margin-right:6px}
+
+.idx{margin-top:12px}
+.yr{
+  display:flex;align-items:baseline;gap:18px;
+  padding:34px 0 12px;
+}
+.yr span:first-child{font-size:26px;color:var(--accent-dark);letter-spacing:.08em}
+.yr .ln{flex:1;height:1px;background:var(--divider)}
+.yr .cnt{font-size:12px;color:var(--ink-faint);font-family:var(--mono)}
+
+.row{
+  display:grid;grid-template-columns:38px 108px 1fr 92px;
+  align-items:baseline;gap:16px;
+  padding:15px 8px;
+  border-bottom:1px solid var(--hair);
+  text-decoration:none;color:inherit;
+  transition:background .18s;
+}
+.row:hover{background:rgba(223,145,147,.07)}
+.row .no{font-family:var(--mono);font-size:12.5px;color:var(--ink-faint)}
+.row .dt{font-family:var(--mono);font-size:12.5px;color:var(--ink-faint)}
+.row .ti{font-size:16.5px;color:var(--ink-deep);line-height:1.55}
+.row:hover .ti{color:var(--accent-dark)}
+.row .ti small{display:block;font-size:12.5px;color:var(--ink-muted);margin-top:3px;line-height:1.6}
+.row .ct{font-size:12.5px;color:var(--accent-dark);text-align:right}
+
+.tail{
+  display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;
+  margin-top:44px;padding-top:26px;border-top:1px solid var(--line);
+}
+.tail .cloud a{font-size:14px}
+
+.status{margin-top:36px}
+</style>
+</head>
+<body>
+
+<nav class="bar">
+  <div class="wrap">
+    <a class="brand" href="#">ze<i>.</i></a>
+    <div class="links"><a href="#" class="on">索引</a><a href="#">分类</a><a href="#">标签</a><a href="#">导航</a><a href="#">关于</a></div>
+  </div>
+</nav>
+
+<header class="heroimg strip">
+  <div class="inner wrap"><div class="k">AN INDEX OF EVERYTHING</div></div>
+  <div class="wave">
+    <svg viewBox="0 0 1440 50" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,26 C320,48 640,4 960,22 C1180,34 1320,42 1440,26 L1440,50 L0,50 Z" fill="#ffffff"/>
+    </svg>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section class="opening">
+    <h1>这里是全部东西的<em>索引</em>。</h1>
+    <p>不摆卡片，不做缩略图。就是把写过的东西按时间列出来，想找哪篇直接点。</p>
+    <div class="kv">
+      <span><b>42</b>篇文章</span>
+      <span><b>6</b>个分类</span>
+      <span><b>21</b>个标签</span>
+      <span><b>2024</b>起笔</span>
+    </div>
+  </section>
+
+  <div class="idx">
+
+    <div class="yr"><span>2026</span><span class="ln"></span><span class="cnt">5 篇</span></div>
+
+    <a class="row" href="#">
+      <span class="no">01</span>
+      <span class="dt">09-11</span>
+      <span class="ti">开张：为什么又开了一个站<small>第三个个人站了。这次不图好看，图能长期活下去。</small></span>
+      <span class="ct">建站日志</span>
+    </a>
+
+    <a class="row" href="#">
+      <span class="no">02</span>
+      <span class="dt">09-10</span>
+      <span class="ti">Astro 5 之后，内容层写法变了不少<small>连 zod 都不能从 astro:content 引了。</small></span>
+      <span class="ct">前端工程</span>
+    </a>
+
+    <a class="row" href="#">
+      <span class="no">03</span>
+      <span class="dt">09-09</span>
+      <span class="ti">Obsidian 写博客，图片路径是个绕不开的坑<small>![[图片]] 语法 Astro 不认，最后选了最省心的方案。</small></span>
+      <span class="ct">建站日志</span>
+    </a>
+
+    <a class="row" href="#">
+      <span class="no">04</span>
+      <span class="dt">09-08</span>
+      <span class="ti">把 82 个高星个人博客扒了一遍之后<small>按「颜值 / 省心 / 速度」三个维度重新排序。</small></span>
+      <span class="ct">建站日志</span>
+    </a>
+
+    <a class="row" href="#">
+      <span class="no">05</span>
+      <span class="dt">09-07</span>
+      <span class="ti">C 语言指针复习：从「能跑」到「讲得出」</span>
+      <span class="ct">学习笔记</span>
+    </a>
+
+    <div class="yr"><span>2025</span><span class="ln"></span><span class="cnt">2 篇</span></div>
+
+    <a class="row" href="#">
+      <span class="no">06</span>
+      <span class="dt">12-18</span>
+      <span class="ti">专升本备考第一阶段的复盘</span>
+      <span class="ct">随笔</span>
+    </a>
+
+    <a class="row" href="#">
+      <span class="no">07</span>
+      <span class="dt">10-02</span>
+      <span class="ti">第一次把项目部署上线，踩了七个坑</span>
+      <span class="ct">前端工程</span>
+    </a>
+
+  </div>
+
+  <div class="tail">
+    <div class="cloud">
+      <a href="#" class="t2">Astro</a>
+      <a href="#" class="t3">踩坑</a>
+      <a href="#" class="t5">Obsidian</a>
+      <a href="#" class="t1">Markdown</a>
+      <a href="#" class="t4">建站</a>
+    </div>
+    <a class="more" href="#" style="font-size:13.5px;color:var(--ink-muted);text-decoration:none">全部 42 篇 →</a>
+  </div>
+
+  <div class="status">
+    <span class="l">导航收藏夹和在线工具还在做，预计这周能上。</span>
+    <span class="r">更新于 2026-09-11</span>
+  </div>
+
+</div>
+
+<footer class="site">Astro 7 · 纯静态 · 海内外双站</footer>
+</body>
+</html>

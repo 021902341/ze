@@ -1,75 +1,58 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import SiteHeader from '../../components/SiteHeader.astro';
 import PostCard from '../../components/PostCard.astro';
-import { getPosts, countBy } from '../../utils/site';
+import { getPosts, countBy, categoryHref } from '../../utils/site';
 
 const posts = await getPosts();
 const categories = countBy(posts.map((p) => p.data.category));
 const allTags = countBy(posts.flatMap((p) => p.data.tags));
 ---
 
-<BaseLayout title="博客 · ze" description="技术博客 —— 记录学习、踩坑与建站过程">
-  <SiteHeader />
-
-  <main class="shell">
-    <section class="page-head">
-      <h1 class="grad-text">博客</h1>
-      <p class="sub">
+<BaseLayout title="文章 · ze" description="全部文章 —— 学习、踩坑与建站记录">
+  <main class="wrap">
+    <header class="head">
+      <h1 class="page-title">文章</h1>
+      <p class="page-sub">
         共 <b>{posts.length}</b> 篇 · <b>{categories.length}</b> 个分类 ·
         <b>{allTags.length}</b> 个标签
       </p>
-    </section>
+    </header>
 
     <nav class="filters" aria-label="分类筛选">
-      <a class="pill on" href="/blog/">
-        全部 <span class="n">{posts.length}</span>
-      </a>
+      <a class="pill on" href="/blog/">全部 <span>{posts.length}</span></a>
       {categories.map(([name, n]) => (
-        <a class="pill" href={`/blog/categories/${encodeURIComponent(name)}/`}>
-          {name} <span class="n">{n}</span>
-        </a>
+        <a class="pill" href={categoryHref(name)}>{name} <span>{n}</span></a>
       ))}
     </nav>
 
-    <section class="list">
+    <div class="list">
       {posts.map((post) => <PostCard post={post} />)}
-    </section>
+    </div>
 
     {posts.length === 0 && (
-      <p class="empty">还没有文章。往 <code>src/content/blog/</code> 里放 Markdown 就会出现在这里。</p>
+      <div class="empty glass">
+        还没有文章。往 <code>src/content/blog/</code> 里放 Markdown 就会出现在这里。
+      </div>
     )}
   </main>
 </BaseLayout>
 
 <style>
-  .page-head {
-    padding: 34px 0 26px;
+  .wrap {
+    max-width: var(--content-w);
+    margin: 0 auto;
+    padding: 40px var(--shell-pad) 60px;
   }
 
-  h1 {
-    margin: 0 0 12px;
-    font-size: clamp(38px, 7vw, 62px);
-    font-weight: 800;
-    letter-spacing: -.035em;
-    line-height: 1.05;
-  }
-
-  .sub {
-    margin: 0;
-    color: var(--text-2);
-    font-size: 14px;
-  }
-
-  .sub b {
-    color: var(--text-1);
-    font-family: var(--font-mono);
-  }
+  .head { text-align: center; padding-bottom: 30px; }
+  .head .page-sub { margin-top: 12px; }
+  .head b { color: var(--text-deep); font-family: var(--mono); }
 
   .filters {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+    justify-content: center;
     margin-bottom: 28px;
   }
 
@@ -77,54 +60,39 @@ const allTags = countBy(posts.flatMap((p) => p.data.tags));
     display: inline-flex;
     align-items: center;
     gap: 7px;
-    padding: 7px 14px;
-    border-radius: 11px;
+    padding: 6px 14px;
+    border-radius: 9px;
     font-size: 13px;
-    font-weight: 600;
     text-decoration: none;
-    color: var(--text-2);
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    transition: background .18s, color .18s, border-color .18s, box-shadow .18s;
+    color: var(--text);
+    background: color-mix(in srgb, var(--primary) 7%, transparent);
+    border: 1px solid color-mix(in srgb, var(--primary) 18%, transparent);
+    transition: background var(--t) var(--ease), border-color var(--t) var(--ease), color var(--t) var(--ease);
   }
-
   .pill:hover {
-    background: var(--glass-bg-hover);
-    color: var(--text-1);
-    border-color: rgba(176, 125, 255, .42);
+    background: color-mix(in srgb, var(--primary) 18%, transparent);
+    border-color: color-mix(in srgb, var(--primary) 40%, transparent);
   }
-
   .pill.on {
-    background: linear-gradient(120deg, rgba(255, 46, 120, .26), rgba(176, 125, 255, .26));
-    border-color: rgba(255, 46, 120, .5);
     color: #fff;
-    box-shadow: 0 0 22px -6px rgba(255, 46, 120, .6);
+    background: var(--primary);
+    border-color: var(--primary);
   }
+  .pill span { font-family: var(--mono); font-size: 11px; opacity: .75; }
 
-  .pill .n {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    opacity: .65;
-  }
-
-  .list {
-    display: grid;
-    gap: 16px;
-    padding-bottom: 60px;
-  }
+  .list { display: flex; flex-direction: column; gap: 14px; }
 
   .empty {
-    padding: 60px 0;
+    padding: 50px 30px;
     text-align: center;
-    color: var(--text-3);
+    color: var(--text-muted);
     font-size: 14px;
   }
-
   .empty code {
-    font-family: var(--font-mono);
-    background: rgba(255, 255, 255, .06);
+    font-family: var(--mono);
+    background: color-mix(in srgb, var(--primary) 12%, transparent);
     padding: 2px 7px;
     border-radius: 5px;
-    color: var(--text-2);
+    color: var(--primary-dark);
   }
 </style>

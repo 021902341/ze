@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>方案 D · 时间轴流</title>
+<link rel="stylesheet" href="./base.css">
+<style>
+:root{--maxw:920px}
+.heroimg .inner{padding:96px 20px 70px}
+.heroimg h1{font-size:36px;font-weight:400;letter-spacing:.03em;margin-bottom:12px;text-shadow:0 2px 16px rgba(0,0,0,.45)}
+.heroimg .sub{font-size:14px;opacity:.86;letter-spacing:.06em}
+.heroimg .wave svg{height:62px}
+
+.lede{padding:44px 0 8px;display:flex;align-items:baseline;gap:18px;flex-wrap:wrap}
+.lede p{font-size:15px;color:var(--ink-muted)}
+.lede .n{font-size:13px;color:var(--ink-faint);font-family:var(--mono)}
+
+.tl{position:relative;padding-left:104px;margin-top:26px}
+.tl::before{content:"";position:absolute;left:76px;top:14px;bottom:14px;width:1px;background:var(--divider)}
+
+.yr{position:relative;margin:30px 0 6px;font-size:23px;color:var(--accent-dark);letter-spacing:.06em}
+.yr:first-child{margin-top:0}
+.yr::before{
+  content:"";position:absolute;left:-34px;top:12px;width:11px;height:11px;
+  background:var(--bg);border:1px solid var(--accent);transform:rotate(45deg);
+}
+
+.ent{position:relative;display:block;padding:16px 0 18px;border-bottom:1px dashed var(--divider);text-decoration:none;color:inherit}
+.ent:last-child{border-bottom:none}
+.ent::before{
+  content:"";position:absolute;left:-31px;top:23px;width:7px;height:7px;
+  background:var(--accent);transform:rotate(45deg);
+}
+.ent .d{position:absolute;left:-104px;width:62px;top:19px;text-align:right;
+  font-family:var(--mono);font-size:12.5px;color:var(--ink-faint)}
+.ent h3{font-size:18px;font-weight:400;color:var(--ink-deep);line-height:1.5;margin-bottom:6px}
+.ent p{font-size:13.5px;color:var(--ink-muted);line-height:1.72}
+.ent .tags{margin-top:9px;display:flex;gap:9px;font-size:12.5px;color:var(--accent-dark)}
+
+.status{margin-top:46px}
+</style>
+</head>
+<body>
+
+<nav class="bar">
+  <div class="wrap">
+    <a class="brand" href="#">ze<i>.</i></a>
+    <div class="links"><a href="#" class="on">首页</a><a href="#">博客</a><a href="#">归档</a><a href="#">分类</a><a href="#">关于</a></div>
+  </div>
+</nav>
+
+<header class="heroimg">
+  <div class="inner">
+    <h1>时间轴</h1>
+    <div class="sub">从下往上翻，就是一个人的学习轨迹</div>
+  </div>
+  <div class="wave">
+    <svg viewBox="0 0 1440 90" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,50 C280,88 520,10 780,30 C1020,48 1240,82 1440,46 L1440,90 L0,90 Z" fill="#ffffff"/>
+    </svg>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="lede">
+    <p>所有文章按时间倒序铺开，按年分组。</p>
+    <span class="n">42 篇 · 2024 → 2026</span>
+  </div>
+
+  <div class="tl">
+    <div class="yr">2026</div>
+
+    <a class="ent" href="#">
+      <span class="d">09-11</span>
+      <h3>开张：为什么又开了一个站</h3>
+      <p>第三个个人站了。这次不图好看，图能长期活下去 —— 说说这次的取舍，以及为什么把「不租服务器」写进第一条规矩。</p>
+      <div class="tags"><span>#建站日志</span><span>#随笔</span></div>
+    </a>
+
+    <a class="ent" href="#">
+      <span class="d">09-10</span>
+      <h3>Astro 5 之后，内容层写法变了不少</h3>
+      <p>defineCollection 必须带 loader，配置文件换了位置，连 zod 都不能从 astro:content 引了。</p>
+      <div class="tags"><span>#前端工程</span><span>#踩坑</span></div>
+    </a>
+
+    <a class="ent" href="#">
+      <span class="d">09-09</span>
+      <h3>Obsidian 写博客，图片路径是个绕不开的坑</h3>
+      <p>![[图片]] 语法 Astro 不认。折腾了几种方案，最后选了最笨但最省心的那个。</p>
+      <div class="tags"><span>#建站日志</span><span>#工作流</span></div>
+    </a>
+
+    <a class="ent" href="#">
+      <span class="d">09-08</span>
+      <h3>把 82 个高星个人博客扒了一遍之后</h3>
+      <p>Hugo 星标最多不代表最合适。按「颜值 / 省心 / 速度」三个维度重新排了一遍序。</p>
+      <div class="tags"><span>#建站日志</span></div>
+    </a>
+
+    <a class="ent" href="#">
+      <span class="d">09-07</span>
+      <h3>C 语言指针复习：从「能跑」到「讲得出」</h3>
+      <p>把之前刷过的题按考点重新梳了一遍，顺手做了张避坑表。</p>
+      <div class="tags"><span>#学习笔记</span><span>#C语言</span></div>
+    </a>
+
+    <div class="yr">2025</div>
+
+    <a class="ent" href="#">
+      <span class="d">12-18</span>
+      <h3>专升本备考第一阶段的复盘</h3>
+      <p>进度、踩空的地方、以及调整后的计划表。</p>
+      <div class="tags"><span>#随笔</span></div>
+    </a>
+
+    <a class="ent" href="#">
+      <span class="d">10-02</span>
+      <h3>第一次把项目部署上线，踩了七个坑</h3>
+      <p>从本地能跑到线上能访问，中间的距离比想象中远。</p>
+      <div class="tags"><span>#前端工程</span></div>
+    </a>
+  </div>
+
+  <div class="status" style="margin-top:46px">
+    <span class="l">导航收藏夹和在线工具还在做，预计这周能上。</span>
+    <span class="r">更新于 2026-09-11</span>
+  </div>
+</div>
+
+<footer class="site">Astro 7 · 纯静态 · 海内外双站</footer>
+</body>
+</html>

@@ -3,12 +3,7 @@ import type { CollectionEntry } from 'astro:content';
 
 export type Post = CollectionEntry<'blog'>;
 
-export const SITE = {
-  name: 'ze',
-  title: 'ze · 个人门户',
-  description: '个人主页 · 技术博客 · 导航收藏夹 · 在线工具',
-  author: 'ze',
-} as const;
+// 站点文案统一在 src/data/site.ts，这里不再重复定义 SITE
 
 /** 草稿只在开发环境可见，生产构建自动排除 */
 export function isVisible(entry: Post): boolean {

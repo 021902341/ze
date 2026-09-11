@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>方案 H · 左固定分屏</title>
+<link rel="stylesheet" href="./base.css">
+<style>
+:root{--maxw:100%}
+body{display:grid;grid-template-columns:minmax(360px,40%) 1fr;min-height:100vh;background:#fff}
+
+.left{
+  position:relative;overflow:hidden;
+  background-image:url('./hero.jpg');background-size:cover;background-position:center 30%;
+  display:flex;align-items:center;justify-content:center;
+}
+.left::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(20,15,14,.55) 0%,rgba(20,15,14,.42) 50%,rgba(20,15,14,.72) 100%);
+}
+.left .card{position:relative;z-index:3;color:#fff;text-align:center;padding:0 34px;width:100%}
+.left .avatar{
+  width:84px;height:84px;border-radius:50%;margin:0 auto 20px;
+  background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.5);
+  display:flex;align-items:center;justify-content:center;font-size:26px;backdrop-filter:blur(6px);
+}
+.left .name{font-size:30px;letter-spacing:.06em;line-height:1.3;margin-bottom:8px}
+.left .role{font-size:13px;opacity:.82;letter-spacing:.06em;line-height:1.8}
+.left .htk{display:inline-block;margin-top:22px;font-size:13px;padding:7px 18px;border-radius:999px;
+  background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.38)}
+.left .navv{display:flex;flex-direction:column;gap:2px;margin-top:34px;text-align:left;width:190px;margin-left:auto;margin-right:auto}
+.left .navv a{
+  color:rgba(255,255,255,.88);text-decoration:none;font-size:14px;
+  padding:8px 14px;border-radius:9px;display:flex;justify-content:space-between;align-items:center;
+}
+.left .navv a.on{background:rgba(255,255,255,.18);color:#fff}
+.left .navv a span{font-size:12px;opacity:.6}
+.left .socials{display:flex;gap:12px;justify-content:center;margin-top:32px}
+.left .socials a{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.4);color:#fff;text-decoration:none;font-size:12.5px}
+
+.right{padding:44px 46px 60px;display:flex;flex-direction:column}
+.masthead{display:flex;align-items:baseline;justify-content:space-between;gap:20px;padding-bottom:22px;border-bottom:2px solid var(--line)}
+.masthead h1{font-size:34px;font-weight:400;color:var(--ink-deep);letter-spacing:.01em}
+.masthead h1::before{content:"";display:inline-block;width:9px;height:9px;background:var(--accent);transform:rotate(45deg);margin-right:12px;vertical-align:4px}
+.masthead .c{font-size:12.5px;color:var(--ink-faint);font-family:var(--mono)}
+
+.rows{margin-top:8px}
+.r{
+  display:grid;grid-template-columns:64px 1fr auto;gap:18px;align-items:center;
+  padding:16px 6px;border-bottom:1px solid var(--hair);text-decoration:none;color:inherit;
+}
+.r:hover{background:rgba(223,145,147,.06)}
+.r .thumb{width:64px;height:64px;border-radius:10px;border:1px solid var(--line);overflow:hidden}
+.r .thumb .ph{width:100%;height:100%;font-size:11px;letter-spacing:0}
+.r h3{font-size:16.5px;font-weight:400;color:var(--ink-deep);line-height:1.5;margin-bottom:5px}
+.r:hover h3{color:var(--accent-dark)}
+.r p{font-size:12.5px;color:var(--ink-muted);line-height:1.65}
+.r .when{font-family:var(--mono);font-size:12px;color:var(--ink-faint);text-align:right}
+
+.panels{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:auto;padding-top:38px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px}
+.panel h3{font-size:13.5px;font-weight:400;color:var(--ink-deep);margin-bottom:14px}
+.panel h3::before{content:"";display:inline-block;width:6px;height:6px;background:var(--accent);transform:rotate(45deg);margin-right:9px;vertical-align:1px}
+
+.status{grid-column:1/-1;margin-top:20px}
+</style>
+</head>
+<body>
+
+<div class="left">
+  <div class="card">
+    <div class="avatar">ze</div>
+    <div class="name">李雨泽</div>
+    <div class="role">天津 · 软件工程 · 专升本备考中</div>
+    <div class="htk">「 慢慢来，比较快 」</div>
+    <div class="navv">
+      <a href="#" class="on">首页 <span>HOME</span></a>
+      <a href="#">博客 <span>BLOG</span></a>
+      <a href="#">分类 <span>CATS</span></a>
+      <a href="#">标签 <span>TAGS</span></a>
+      <a href="#">关于 <span>ABOUT</span></a>
+    </div>
+    <div class="socials"><a href="#">GH</a><a href="#">Mail</a><a href="#">RSS</a></div>
+  </div>
+</div>
+
+<div class="right">
+
+  <div class="masthead">
+    <h1>最近写了什么</h1>
+    <span class="c">42 POSTS · UPDATED 2026-09-11</span>
+  </div>
+
+  <div class="rows">
+
+    <a class="r" href="#">
+      <span class="thumb"><span class="ph"></span></span>
+      <span>
+        <h3>开张：为什么又开了一个站</h3>
+        <p>第三个个人站了。这次不图好看，图能长期活下去。</p>
+      </span>
+      <span class="when">09-11</span>
+    </a>
+
+    <a class="r" href="#">
+      <span class="thumb"><span class="ph alt"></span></span>
+      <span>
+        <h3>Astro 5 之后，内容层写法变了不少</h3>
+        <p>defineCollection 必须带 loader，连 zod 都换了入口。</p>
+      </span>
+      <span class="when">09-10</span>
+    </a>
+
+    <a class="r" href="#">
+      <span class="thumb"><span class="ph"></span></span>
+      <span>
+        <h3>Obsidian 写博客，图片路径是个绕不开的坑</h3>
+        <p>![[图片]] 语法 Astro 不认，最后选了最省心的方案。</p>
+      </span>
+      <span class="when">09-09</span>
+    </a>
+
+    <a class="r" href="#">
+      <span class="thumb"><span class="ph alt"></span></span>
+      <span>
+        <h3>把 82 个高星个人博客扒了一遍之后</h3>
+        <p>星标最多不代表最合适。按三个维度重新排了序。</p>
+      </span>
+      <span class="when">09-08</span>
+    </a>
+
+    <a class="r" href="#">
+      <span class="thumb"><span class="ph"></span></span>
+      <span>
+        <h3>C 语言指针复习：从「能跑」到「讲得出」</h3>
+        <p>按考点重新梳了一遍，顺手做了张避坑表。</p>
+      </span>
+      <span class="when">09-07</span>
+    </a>
+
+  </div>
+
+  <div class="panels">
+    <div class="panel">
+      <h3>分类</h3>
+      <div class="cats">
+        <a href="#">建站日志<b>18</b></a>
+        <a href="#">前端工程<b>11</b></a>
+        <a href="#">学习笔记<b>7</b></a>
+        <a href="#">随笔<b>2</b></a>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>标签</h3>
+      <div class="cloud">
+        <a href="#" class="t2">Astro</a>
+        <a href="#" class="t3">踩坑</a>
+        <a href="#" class="t4">Obsidian</a>
+        <a href="#" class="t1">CSS</a>
+      </div>
+    </div>
+    <div class="status">
+      <span class="l">导航收藏夹和在线工具还在做，预计这周能上。</span>
+      <span class="r">2026-09-11</span>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
