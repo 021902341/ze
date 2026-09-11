@@ -1,0 +1,166 @@
+---
+import { SITE, SOCIALS } from '../data/site';
+
+/**
+ * 首屏满屏 Hero —— 参考 daily.yybb.us 的入口处理：
+ * 满屏图 + 居中大标题 + 深色玻璃一言胶囊（社交图标塞在里面）+ 底部云朵波浪，
+ * 往下滚才进入正文。
+ */
+
+// 底部云朵波浪：用连续圆弧拼出来，比正弦波更接近参考站的形状
+const BUMPS = 36;
+const VIEW_W = 1440;
+const step = VIEW_W / BUMPS;
+let wave = `M0,100 L0,72`;
+for (let i = 0; i < BUMPS; i++) {
+  wave += ` a${(step / 2).toFixed(1)},24 0 0,1 ${step.toFixed(1)},0`;
+}
+wave += ` L${VIEW_W},100 Z`;
+
+const title = SITE.heroTitle || SITE.brandPrefix;
+---
+
+<header class="hero" style={`--hero: url('${SITE.heroImage}')`}>
+  <div class="hero-inner">
+    <h1 class="hero-title">{title}</h1>
+
+    <div class="hitokoto">
+      <p>{SITE.heroQuote || SITE.hitokoto}</p>
+      <div class="hico">
+        {SOCIALS.map((s) => (
+          <a href={s.href} target="_blank" rel="noopener" aria-label={s.label}>{s.short}</a>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <a class="scroll-hint" href="#content" aria-label="进入正文">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+         stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M6 9l6 6 6-6"/>
+    </svg>
+  </a>
+
+  <div class="wave" aria-hidden="true">
+    <svg viewBox={`0 0 ${VIEW_W} 100`} preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d={wave} fill="var(--bg)"/>
+    </svg>
+  </div>
+</header>
+
+<style>
+  .hero {
+    position: relative;
+    height: calc(100dvh - var(--navbar-h));
+    min-height: 460px;
+    overflow: hidden;
+    background-image: var(--hero, url('/hero.jpg'));
+    background-size: cover;
+    background-position: center 32%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* 轻压暗，保证白字可读；参考站的图本身柔和，不需要压太重 */
+  .hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg,
+      rgba(20, 15, 14, .28) 0%,
+      rgba(20, 15, 14, .14) 42%,
+      rgba(20, 15, 14, .40) 100%);
+  }
+
+  .hero-inner {
+    position: relative;
+    z-index: 3;
+    text-align: center;
+    color: #fff;
+    padding: 0 24px 40px;
+    max-width: 860px;
+  }
+
+  .hero-title {
+    font-size: clamp(52px, 11vw, 128px);
+    font-weight: 400;
+    line-height: 1.02;
+    letter-spacing: .06em;
+    margin-bottom: 30px;
+    text-shadow: 0 3px 28px rgba(0, 0, 0, .42);
+  }
+
+  /* 深色玻璃胶囊，社交图标塞在里面 —— 参考站的标志性处理 */
+  .hitokoto {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 9px;
+    padding: 11px 20px 9px;
+    border-radius: 13px;
+    background: rgba(28, 24, 23, .42);
+    border: 1px solid rgba(255, 255, 255, .18);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    max-width: 100%;
+  }
+  .hitokoto p {
+    font-size: 13px;
+    line-height: 1.7;
+    opacity: .95;
+  }
+  .hico {
+    display: flex;
+    gap: 13px;
+    justify-content: center;
+    font-size: 12px;
+    opacity: .86;
+  }
+  .hico a {
+    color: #fff;
+    text-decoration: none;
+    transition: opacity var(--t) var(--ease);
+  }
+  .hico a:hover { opacity: 1; text-decoration: underline; text-underline-offset: 3px; }
+
+  .scroll-hint {
+    position: absolute;
+    z-index: 4;
+    left: 50%;
+    bottom: 78px;
+    transform: translateX(-50%);
+    color: rgba(255, 255, 255, .8);
+    text-decoration: none;
+    animation: nudge 2.2s ease-in-out infinite;
+  }
+  @keyframes nudge {
+    0%, 100% { transform: translate(-50%, 0); opacity: .72; }
+    50% { transform: translate(-50%, 9px); opacity: 1; }
+  }
+
+  .wave {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    z-index: 4;
+    line-height: 0;
+  }
+  .wave svg {
+    width: 100%;
+    height: 76px;
+    display: block;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scroll-hint { animation: none; }
+  }
+
+  @media (max-width: 640px) {
+    .hero { height: calc(92dvh - var(--navbar-h)); }
+    .hero-title { letter-spacing: .04em; margin-bottom: 22px; }
+    .hitokoto p { font-size: 12px; }
+    .wave svg { height: 54px; }
+    .scroll-hint { bottom: 56px; }
+  }
+</style>

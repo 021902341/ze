@@ -1,8 +1,8 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteHero from '../components/SiteHero.astro';
 import SideRail from '../components/SideRail.astro';
 import PostCard from '../components/PostCard.astro';
-import { SITE, SIDE_NAV, SOCIALS } from '../data/site';
 import { getPosts, countBy, formatDate, postHref } from '../utils/site';
 
 const posts = await getPosts();
@@ -13,196 +13,80 @@ const [featured, ...rest] = posts;
 ---
 
 <BaseLayout>
-  <div class="shell">
+  <SiteHero />
 
-    <div class="photo" style={`--hero: url('${SITE.heroImage}')`}>
-      <div class="id">
-        <div class="avatar">{SITE.brandSuffix}</div>
-        <div class="name">{SITE.author}</div>
-        <div class="role" set:html={SITE.role} />
+  <div class="work" id="content">
+    <SideRail postCount={posts.length} categories={categories} tags={tags} />
 
-        <div class="hitokoto">
-          <p>{SITE.hitokoto}</p>
-          <div class="hico">
-            {SOCIALS.map((s) => (
-              <a href={s.href} target="_blank" rel="noopener">{s.short}</a>
-            ))}
-          </div>
-        </div>
-
-        <nav class="navv">
-          {SIDE_NAV.map((item) => (
-            <a href={item.href} class={Astro.url.pathname === item.href ? 'on' : ''}>
-              <i class={`ni ${item.shape}`} style={`--ni-c:${item.iconColor}`} aria-hidden="true"></i>
-              {item.label}
-            </a>
-          ))}
-        </nav>
-      </div>
-    </div>
-
-    <div class="work">
-
-      <SideRail postCount={posts.length} categories={categories} tags={tags} />
-
-      <main>
-        {featured ? (
-          <a class="feat glass glass-hover" href={postHref(featured)}>
-            {featured.data.cover
-              ? <img class="fcover" src={featured.data.cover} alt="" loading="eager" />
-              : <div class="fcover ph"></div>}
-            <div class="veil"></div>
-            <div class="fbody">
-              <span class="pin">
-                <span class="ic-tag" aria-hidden="true"></span>置顶
-              </span>
-              <h2>{featured.data.title}</h2>
-              {featured.data.description && <p>{featured.data.description}</p>}
-              <div class="fmeta">
-                {featured.data.category} · {formatDate(featured.data.pubDate)}
-              </div>
+    <main>
+      {featured ? (
+        <a class="feat glass glass-hover" href={postHref(featured)}>
+          {featured.data.cover
+            ? <img class="fcover" src={featured.data.cover} alt="" loading="eager" />
+            : <div class="fcover ph"></div>}
+          <div class="veil"></div>
+          <div class="fbody">
+            <span class="pin">
+              <span class="ic-tag" aria-hidden="true"></span>置顶
+            </span>
+            <h2>{featured.data.title}</h2>
+            {featured.data.description && <p>{featured.data.description}</p>}
+            <div class="fmeta">
+              {featured.data.category} · {formatDate(featured.data.pubDate)}
             </div>
-          </a>
-        ) : (
-          <div class="empty glass">
-            还没有文章。往 <code>src/content/blog/</code> 里放 Markdown 就会出现在这里。
           </div>
-        )}
-
-        {rest.length > 0 && (
-          <div class="sec-head">
-            <h2>最近更新</h2>
-            <span class="rule dash"></span>
-            <a class="more" href="/blog/">全部文章 →</a>
-          </div>
-        )}
-
-        <div class="posts">
-          {rest.slice(0, 5).map((post) => <PostCard post={post} />)}
+        </a>
+      ) : (
+        <div class="empty glass">
+          还没有文章。往 <code>src/content/blog/</code> 里放 Markdown 就会出现在这里。
         </div>
+      )}
 
-        <div class="status">
-          <span>导航收藏夹和在线工具还在做，预计这周能上。</span>
-          <span class="r">{formatDate(new Date())}</span>
+      {rest.length > 0 && (
+        <div class="sec-head">
+          <h2>最近更新</h2>
+          <span class="rule dash"></span>
+          <a class="more" href="/blog/">全部文章 →</a>
         </div>
-      </main>
+      )}
 
-    </div>
+      <div class="posts">
+        {rest.slice(0, 5).map((post) => <PostCard post={post} />)}
+      </div>
+
+      <div class="status">
+        <span>导航收藏夹和在线工具还在做，预计这周能上。</span>
+        <span class="r">{formatDate(new Date())}</span>
+      </div>
+    </main>
   </div>
 </BaseLayout>
 
 <style>
-  .shell {
-    display: grid;
-    grid-template-columns: var(--panel-w) 1fr;
-    align-items: stretch;
-  }
-
-  /* ---------- 左：整高图片面板 ---------- */
-  .photo {
-    position: relative;
-    overflow: hidden;
-    background-image: var(--hero, url('/hero.jpg'));
-    background-size: cover;
-    background-position: center 30%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 0 18px 18px 0;
-  }
-  .photo::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg,
-      rgba(30, 24, 22, .42) 0%,
-      rgba(30, 24, 22, .30) 45%,
-      rgba(30, 24, 22, .62) 100%);
-  }
-
-  .id {
-    position: relative;
-    z-index: 3;
-    text-align: center;
-    color: #fff;
-    padding: 40px 26px;
-    width: 100%;
-  }
-
-  .avatar {
-    width: 78px;
-    height: 78px;
-    border-radius: 50%;
-    margin: 0 auto 16px;
-    background: rgba(255, 255, 255, .2);
-    border: 1px solid rgba(255, 255, 255, .55);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    backdrop-filter: blur(8px);
-  }
-
-  .name { font-size: 27px; letter-spacing: .07em; line-height: 1.3; margin-bottom: 6px; }
-  .role { font-size: 12.5px; opacity: .85; letter-spacing: .04em; line-height: 1.85; }
-
-  /* 深色玻璃一言胶囊，社交图标塞在里面 —— 线上 hero 的做法 */
-  .hitokoto {
-    margin: 22px auto 0;
-    display: inline-flex;
-    flex-direction: column;
-    gap: 9px;
-    padding: 11px 18px 9px;
-    border-radius: 13px;
-    background: rgba(28, 24, 23, .42);
-    border: 1px solid rgba(255, 255, 255, .18);
-    backdrop-filter: blur(10px);
-    max-width: 100%;
-  }
-  .hitokoto p { font-size: 12.5px; line-height: 1.7; opacity: .95; }
-  .hico { display: flex; gap: 12px; justify-content: center; font-size: 12px; opacity: .86; }
-  .hico a { color: #fff; text-decoration: none; }
-  .hico a:hover { opacity: 1; text-decoration: underline; text-underline-offset: 3px; }
-
-  .navv {
-    margin: 26px auto 0;
-    width: 178px;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    text-align: left;
-  }
-  .navv a {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    padding: 7px 12px;
-    border-radius: 9px;
-    color: rgba(255, 255, 255, .88);
-    text-decoration: none;
-    font-size: 13.5px;
-    transition: background var(--t) var(--ease);
-  }
-  .navv a:hover { background: rgba(255, 255, 255, .13); }
-  .navv a.on { background: rgba(255, 255, 255, .2); color: #fff; }
-
-  /* ---------- 右：侧栏 + 主内容 ---------- */
   .work {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 38px var(--shell-pad) 60px;
     display: grid;
-    grid-template-columns: 236px 1fr;
-    gap: 22px;
-    padding: 24px var(--shell-pad) 50px;
-    align-content: start;
-    min-width: 0;
+    grid-template-columns: 258px 1fr;
+    gap: 24px;
+    align-items: start;
+    /* 点 Hero 的下滑箭头跳到这里时，别被吸顶导航挡住 */
+    scroll-margin-top: calc(var(--navbar-h) + 16px);
   }
 
-  main { min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+  main {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
 
   /* 精选大卡 */
   .feat {
     position: relative;
     display: block;
-    min-height: 236px;
+    min-height: 232px;
     overflow: hidden;
     text-decoration: none;
   }
@@ -224,8 +108,8 @@ const [featured, ...rest] = posts;
   .fbody {
     position: relative;
     z-index: 2;
-    padding: 30px 34px;
-    max-width: 66%;
+    padding: 28px 32px;
+    max-width: 68%;
   }
   .pin {
     display: inline-flex;
@@ -240,7 +124,7 @@ const [featured, ...rest] = posts;
     margin-bottom: 13px;
   }
   .fbody h2 {
-    font-size: 25px;
+    font-size: 24px;
     font-weight: 400;
     color: var(--text-deep);
     line-height: 1.45;
@@ -271,18 +155,8 @@ const [featured, ...rest] = posts;
     color: var(--primary-dark);
   }
 
-  /* ---------- 响应式 ---------- */
-  @media (max-width: 1180px) {
-    .work { grid-template-columns: 210px 1fr; }
-  }
-
   @media (max-width: 1080px) {
-    .shell { grid-template-columns: 1fr; }
-    .photo {
-      min-height: 340px;
-      border-radius: 0;
-    }
-    .work { grid-template-columns: 1fr; padding-top: 20px; }
+    .work { grid-template-columns: 1fr; padding-top: 26px; }
     .fbody { max-width: 100%; }
     .veil {
       background: linear-gradient(180deg,
