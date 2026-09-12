@@ -1,0 +1,284 @@
+---
+import { SITE } from '../data/site';
+
+/**
+ * 全局特效层 —— 参考老站「樱花 + 萤火虫」的手作氛围：
+ *  · 樱花花瓣 + 暖黄萤火虫粒子（canvas，飘在内容上层、导航之下，不挡交互）
+ *  · 自定义光标：主色小圆点即时跟随 + 外环延迟跟随，悬停可交互元素时张开
+ * 均为渐进增强：触屏 / prefers-reduced-motion 环境自动不启用。
+ * 开关在 src/data/site.ts 的 fx 字段。
+ */
+const { cursor: fxCursor, particles: fxParticles } = SITE.fx;
+---
+
+{fxParticles && <canvas id="fx-petals" aria-hidden="true"></canvas>}
+{fxCursor && <div class="fx-cursor-dot" aria-hidden="true"></div>}
+{fxCursor && <div class="fx-cursor-ring" aria-hidden="true"></div>}
+
+<style is:global>
+  /* ---------- 粒子画布 ---------- */
+  #fx-petals {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 95; /* 导航(99)之下、内容之上 */
+    pointer-events: none;
+  }
+
+  /* ---------- 自定义光标 ---------- */
+  .fx-cursor-dot,
+  .fx-cursor-ring {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 9999;
+    pointer-events: none;
+    border-radius: 50%;
+    opacity: 0;
+    display: none; /* JS 确认可用后才显示 */
+    will-change: transform, opacity;
+  }
+  .fx-cursor-dot {
+    width: 8px;
+    height: 8px;
+    margin: -4px 0 0 -4px;
+    background: var(--primary);
+    box-shadow: 0 0 0 1.5px rgba(255, 255, 255, .85),
+                0 2px 10px color-mix(in srgb, var(--primary) 55%, transparent);
+  }
+  .fx-cursor-ring {
+    width: 34px;
+    height: 34px;
+    margin: -17px 0 0 -17px;
+    border: 1.5px solid color-mix(in srgb, var(--primary) 55%, transparent);
+    transition:
+      width .22s var(--ease), height .22s var(--ease), margin .22s var(--ease),
+      border-color .22s var(--ease), background-color .22s var(--ease), opacity .25s;
+  }
+  /* 悬停可交互元素：外环张开 */
+  html.fx-hovering .fx-cursor-ring {
+    width: 52px;
+    height: 52px;
+    margin: -26px 0 0 -26px;
+    border-color: var(--primary);
+    background-color: color-mix(in srgb, var(--primary) 10%, transparent);
+  }
+  /* 按下：外环收拢 */
+  html.fx-pressing .fx-cursor-ring {
+    width: 26px;
+    height: 26px;
+    margin: -13px 0 0 -13px;
+  }
+  /* 输入区：装饰淡出，交还给原生文本光标 */
+  html.fx-text .fx-cursor-dot,
+  html.fx-text .fx-cursor-ring {
+    opacity: .15 !important;
+  }
+
+  /* JS 确认可用后才隐藏原生光标（渐进增强，no-JS 完全不受影响） */
+  html.fx-cursor,
+  html.fx-cursor * { cursor: none !important; }
+  html.fx-cursor input,
+  html.fx-cursor textarea,
+  html.fx-cursor [contenteditable] { cursor: text !important; }
+</style>
+
+<script>
+  import { SITE } from '../data/site';
+
+  // 渐进增强门槛：有鼠标 + 未开启减少动态
+  const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (fine && !calm) {
+    const html = document.documentElement;
+
+    /* ============ 自定义光标 ============ */
+    const dot = document.querySelector<HTMLElement>('.fx-cursor-dot');
+    const ring = document.querySelector<HTMLElement>('.fx-cursor-ring');
+    if (SITE.fx.cursor && dot && ring) {
+      html.classList.add('fx-cursor');
+      dot.style.display = ring.style.display = 'block';
+
+      let mx = innerWidth / 2, my = innerHeight / 2; // 鼠标即时位置
+      let rx = mx, ry = my;                          // 外环延迟位置
+      let seen = false;
+
+      addEventListener('mousemove', (e) => {
+        mx = e.clientX; my = e.clientY;
+        if (!seen) {
+          seen = true; rx = mx; ry = my;
+          dot.style.opacity = ring.style.opacity = '1';
+        }
+        const t = e.target as Element | null;
+        const hit = t?.closest?.('a, button, [role="button"], summary, label, select, .fx-hot');
+        html.classList.toggle('fx-hovering', !!hit);
+        const typing = t?.closest?.('input, textarea, [contenteditable]');
+        html.classList.toggle('fx-text', !!typing);
+      }, { passive: true });
+
+      addEventListener('mousedown', () => html.classList.add('fx-pressing'));
+      addEventListener('mouseup', () => html.classList.remove('fx-pressing'));
+      document.addEventListener('mouseleave', () => { dot.style.opacity = ring.style.opacity = '0'; });
+      document.addEventListener('mouseenter', () => { if (seen) dot.style.opacity = ring.style.opacity = '1'; });
+
+      (function loop() {
+        rx += (mx - rx) * 0.16;
+        ry += (my - ry) * 0.16;
+        dot.style.transform = `translate3d(${mx}px,${my}px,0)`;
+        ring.style.transform = `translate3d(${rx.toFixed(1)}px,${ry.toFixed(1)}px,0)`;
+        requestAnimationFrame(loop);
+      })();
+    }
+
+    /* ============ 樱花 + 萤火虫粒子 ============ */
+    const cv = document.querySelector<HTMLCanvasElement>('#fx-petals');
+    if (SITE.fx.particles && cv) {
+      const ctx = cv.getContext('2d')!;
+      let W = 0, H = 0, raf = 0, last = 0;
+      let petals: Petal[] = [], flies: Fly[] = [];
+
+      type Petal = {
+        x: number; y: number; s: number; vy: number;
+        ph: number; phs: number; sway: number;
+        rot: number; rs: number; c: string; a: number;
+      };
+      type Fly = {
+        x: number; y: number; r: number;
+        vx: number; vy: number;
+        base: number; amp: number; sp: number; t: number;
+      };
+
+      // 主题感知配色：跟随 --primary / --pin，暗色模式自动提亮
+      let petalColors: string[] = ['#DF9193', '#eab9ba', '#fff'];
+      let glowRgb: [number, number, number] = [232, 178, 136];
+      let dark = false;
+
+      const hexRgb = (h: string): [number, number, number] => {
+        h = h.trim().replace('#', '');
+        if (h.length === 3) h = h.split('').map((c) => c + c).join('');
+        const n = parseInt(h, 16);
+        return Number.isNaN(n) ? [223, 145, 147] : [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+      };
+
+      const readTheme = () => {
+        const cs = getComputedStyle(html);
+        const p = hexRgb(cs.getPropertyValue('--primary') || '#DF9193');
+        glowRgb = hexRgb(cs.getPropertyValue('--pin') || '#e8b288');
+        dark = html.classList.contains('dark');
+        // 主色向白混 30% 得第二档粉
+        const w = (v: number) => Math.round(v + (255 - v) * 0.3);
+        petalColors = [
+          `rgb(${p[0]},${p[1]},${p[2]})`,
+          `rgb(${w(p[0])},${w(p[1])},${w(p[2])})`,
+          `rgb(255,255,255)`,
+        ];
+      };
+      readTheme();
+      new MutationObserver(readTheme).observe(html, { attributes: true, attributeFilter: ['class'] });
+
+      const build = () => {
+        const dpr = Math.min(devicePixelRatio || 1, 2);
+        W = innerWidth; H = innerHeight;
+        cv!.width = Math.round(W * dpr);
+        cv!.height = Math.round(H * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        const nP = Math.max(12, Math.min(28, Math.round((W * H) / 42000)));
+        const nF = Math.max(5, Math.min(9, Math.round(W / 220)));
+
+        petals = Array.from({ length: nP }, () => ({
+          x: Math.random() * (W + 40) - 20,
+          y: Math.random() * H,
+          s: 3.5 + Math.random() * 3.5,                 // 花瓣长半轴
+          vy: 0.35 + Math.random() * 0.5,               // 下落速度
+          ph: Math.random() * Math.PI * 2,              // 摆动相位
+          phs: 0.008 + Math.random() * 0.012,           // 摆动速度
+          sway: 0.4 + Math.random() * 0.7,              // 水平摆幅
+          rot: Math.random() * Math.PI * 2,             // 自转
+          rs: (Math.random() - 0.5) * 0.024,
+          c: petalColors[Math.floor(Math.random() * petalColors.length)],
+          a: (dark ? 0.72 : 0.55) + Math.random() * 0.22,
+        }));
+
+        flies = Array.from({ length: nF }, () => ({
+          x: Math.random() * W,
+          y: Math.random() * H,
+          r: 10 + Math.random() * 12,                   // 光晕半径
+          vx: (Math.random() - 0.5) * 0.3,
+          vy: (Math.random() - 0.5) * 0.24,
+          base: 0.22 + Math.random() * 0.28,            // 呼吸基础亮度
+          amp: 0.14 + Math.random() * 0.16,
+          sp: 0.012 + Math.random() * 0.014,            // 呼吸速度
+          t: Math.random() * Math.PI * 2,
+        }));
+      };
+
+      const drawPetal = (p: Petal, k: number) => {
+        p.y += p.vy * k;
+        p.ph += p.phs * k;
+        p.rot += p.rs * k;
+        p.x += Math.sin(p.ph) * p.sway * k;
+        if (p.y > H + 24 || p.x < -40 || p.x > W + 40) {
+          p.y = -24; p.x = Math.random() * (W + 40) - 20;
+        }
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot + Math.sin(p.ph) * 0.35);
+        ctx.globalAlpha = p.a;
+        ctx.fillStyle = p.c;
+        const s = p.s * 1.4;
+        ctx.beginPath();
+        ctx.moveTo(0, -s);
+        ctx.bezierCurveTo(s * .85, -s * .55, s * .65, s * .55, 0, s);
+        ctx.bezierCurveTo(-s * .65, s * .55, -s * .85, -s * .55, 0, -s);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      };
+
+      const drawFly = (f: Fly, k: number) => {
+        f.x += f.vx * k; f.y += f.vy * k;
+        f.t += f.sp * k;
+        if (f.x < -30) f.x = W + 30; else if (f.x > W + 30) f.x = -30;
+        if (f.y < -30) f.y = H + 30; else if (f.y > H + 30) f.y = -30;
+        const a = Math.max(0, f.base + Math.sin(f.t) * f.amp);
+        const [gr, gg, gb] = glowRgb;
+        const g = ctx.createRadialGradient(f.x, f.y, 0, f.x, f.y, f.r);
+        g.addColorStop(0, `rgba(${gr},${gg},${gb},${a})`);
+        g.addColorStop(0.55, `rgba(${gr},${gg},${gb},${a * 0.35})`);
+        g.addColorStop(1, `rgba(${gr},${gg},${gb},0)`);
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+        ctx.fill();
+      };
+
+      const tick = (now: number) => {
+        const k = Math.min(3, (now - last) / 16.67); // 帧率归一，高刷屏不加速
+        last = now;
+        ctx.clearRect(0, 0, W, H);
+        for (const p of petals) drawPetal(p, k);
+        for (const f of flies) drawFly(f, k);
+        ctx.globalAlpha = 1;
+        raf = requestAnimationFrame(tick);
+      };
+
+      build();
+      last = performance.now();
+      raf = requestAnimationFrame(tick);
+
+      // 标签页隐藏时暂停，回来续跑
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) cancelAnimationFrame(raf);
+        else { last = performance.now(); raf = requestAnimationFrame(tick); }
+      });
+
+      // 窗口变化防抖重建
+      let rzT = 0;
+      addEventListener('resize', () => { clearTimeout(rzT); rzT = setTimeout(build, 200); });
+    }
+  }
+</script>
