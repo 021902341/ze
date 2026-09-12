@@ -1,0 +1,82 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="404 · 页面不存在" description="这片花瓣飘到空白处了">
+  <main class="nf">
+    <div class="card glass">
+      <div class="code">404</div>
+      <h1>这片花瓣飘到空白处了</h1>
+      <p>你要找的页面不存在，或者已经被搬走了。</p>
+      <div class="acts">
+        <a class="btn primary" href="/">回首页</a>
+        <a class="btn" href="/blog/">看看文章</a>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .nf {
+    min-height: calc(100dvh - var(--navbar-h));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px var(--shell-pad);
+  }
+  .card {
+    max-width: 440px;
+    width: 100%;
+    text-align: center;
+    padding: 52px 36px 44px;
+  }
+  .code {
+    font-size: 72px;
+    line-height: 1;
+    color: var(--primary);
+    letter-spacing: .08em;
+    margin-bottom: 18px;
+  }
+  h1 {
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--text-deep);
+    margin-bottom: 10px;
+  }
+  p {
+    font-size: 13.5px;
+    color: var(--text-muted);
+    margin-bottom: 26px;
+  }
+  .acts {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .btn {
+    font-size: 13.5px;
+    text-decoration: none;
+    padding: 8px 22px;
+    border-radius: 9px;
+    color: var(--text-deep);
+    border: 1px solid var(--border);
+    transition: border-color var(--t) var(--ease), background var(--t) var(--ease),
+                color var(--t) var(--ease), transform var(--t) var(--ease);
+  }
+  .btn:hover {
+    border-color: var(--primary);
+    color: var(--primary-dark);
+    transform: translateY(-1px);
+  }
+  .btn.primary {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+  }
+  .btn.primary:hover {
+    background: var(--primary-dark);
+    border-color: var(--primary-dark);
+    color: #fff;
+  }
+</style>

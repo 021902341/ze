@@ -22,6 +22,8 @@ export const SITE = {
    * 暗色/浅色都合适的是柔和、低对比、留白多的图
    */
   heroImage: '/hero.jpg',
+  /** 社交分享缩略图（og:image / twitter:image），默认用 Hero 图 */
+  ogImage: '/hero.jpg',
   /**
    * 首屏满屏 Hero 上的大标题。留空则用 brandPrefix。
    * 想要更醒目就写自己的名字或短 ID。

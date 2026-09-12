@@ -110,6 +110,35 @@ button { font: inherit; color: inherit; }
 
 ::selection { background: color-mix(in srgb, var(--primary) 30%, transparent); }
 
+/* 键盘焦点：主色环，比浏览器默认更贴品牌（自定义光标隐藏原生光标后尤其需要） */
+:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--primary) 70%, transparent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* 移动端点按高亮透明，避免灰色闪块 */
+a, button { -webkit-tap-highlight-color: transparent; }
+
+/* 粒子与宽元素的溢出兜底，防横向滚动条 */
+body { overflow-x: clip; }
+
+/* 滚动条：细窄 + 主色系（Chrome/Edge/Safari + Firefox 双写法） */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--primary) 38%, transparent);
+  border-radius: 6px;
+  border: 2.5px solid var(--bg);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--primary) 62%, transparent);
+}
+html {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--primary) 45%, transparent) transparent;
+}
+
 /* ============================================================
    玻璃卡（线上 sakura-post-card 的真实写法）
    ============================================================ */

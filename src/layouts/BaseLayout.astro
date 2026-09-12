@@ -13,6 +13,18 @@ const { title = SITE.title, description = SITE.description } = Astro.props;
 
 // canonical 由 SITE_URL 环境变量推导，两个站点各自生成正确的绝对地址
 const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).href;
+const ogImage = new URL(SITE.ogImage || SITE.heroImage, Astro.site ?? Astro.url.origin).href;
+const isHome = Astro.url.pathname === '/';
+
+// 结构化数据：让搜索引擎认识站点与作者
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: SITE.title,
+  url: Astro.site?.href,
+  inLanguage: 'zh-CN',
+  author: { '@type': 'Person', name: SITE.author },
+};
 ---
 
 <!doctype html>
@@ -29,7 +41,17 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).hr
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={ogImage} />
+
+    <!-- 浏览器 chrome 配色：初始值由下方内联脚本按主题即时修正 -->
+    <meta name="theme-color" content="#ffffff" />
+
+    <!-- 首页的 Hero 是 CSS background，浏览器发现得晚；preload 提前抢跑 LCP -->
+    {isHome && <link rel="preload" as="image" href={SITE.heroImage} fetchpriority="high" />}
+
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
@@ -40,13 +62,20 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).hr
     -->
     <link rel="stylesheet" href="/fonts/lxgw/lxgwwenkaigbscreen.css" />
 
-    <!-- 防暗色模式闪白：在样式生效前落类名 -->
+    <!-- 防暗色模式闪白：在样式生效前落类名；并让 theme-color 跟随手动切换 -->
     <script is:inline>
       (function () {
         try {
           var t = localStorage.getItem('theme');
           var dark = t ? t === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
-          if (dark) document.documentElement.classList.add('dark');
+          var el = document.documentElement;
+          if (dark) el.classList.add('dark');
+          var tc = document.querySelector('meta[name="theme-color"]');
+          var sync = function () {
+            if (tc) tc.setAttribute('content', el.classList.contains('dark') ? '#1a1a1a' : '#ffffff');
+          };
+          sync();
+          new MutationObserver(sync).observe(el, { attributes: true, attributeFilter: ['class'] });
         } catch (e) {}
       })();
     </script>
