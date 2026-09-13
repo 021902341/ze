@@ -1,0 +1,139 @@
+---
+import BaseLayout from './BaseLayout.astro';
+
+/**
+ * 工具页共享外壳：面包屑 + 标题 + 说明 + 玻璃卡容器。
+ * 工具本体是纯客户端脚本，写在页面里。
+ */
+interface Props {
+  title: string;
+  desc: string;
+}
+
+const { title, desc } = Astro.props;
+---
+
+<BaseLayout title={`${title} · 在线工具 · ze`} description={desc}>
+  <main class="wrap">
+    <nav class="crumb">
+      <a href="/tools/">在线工具</a>
+      <span aria-hidden="true">/</span>
+      <span>{title}</span>
+    </nav>
+
+    <header class="hd">
+      <h1 class="page-title">{title}</h1>
+      <p class="page-sub">{desc}</p>
+    </header>
+
+    <div class="tool glass">
+      <slot />
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .wrap {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 36px var(--shell-pad) 64px;
+  }
+  .crumb {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    margin-bottom: 22px;
+    display: flex;
+    gap: 8px;
+  }
+  .crumb a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color var(--t) var(--ease);
+  }
+  .crumb a:hover { color: var(--primary-dark); }
+  .hd { margin-bottom: 22px; }
+  .hd .page-title { font-size: clamp(26px, 4vw, 34px); }
+  .hd .page-sub { margin-top: 6px; }
+  .tool { padding: 26px 28px; }
+
+  /* 工具内部通用件（各工具页面复用） */
+  .tool :global(.row) { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .tool :global(.fld) {
+    display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px;
+  }
+  .tool :global(.fld > label) {
+    font-size: 12px; color: var(--text-muted); letter-spacing: .06em;
+  }
+  .tool :global(input[type="text"]),
+  .tool :global(input[type="number"]),
+  .tool :global(textarea) {
+    font: inherit; font-size: 13.5px;
+    color: var(--text-deep);
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 9px 12px;
+    outline: none;
+    transition: border-color var(--t) var(--ease);
+    width: 100%;
+  }
+  .tool :global(input:focus),
+  .tool :global(textarea:focus) {
+    border-color: color-mix(in srgb, var(--primary) 55%, transparent);
+  }
+  .tool :global(textarea) {
+    font-family: var(--mono); font-size: 12.5px; line-height: 1.7;
+    resize: vertical; min-height: 130px;
+  }
+  .tool :global(.btn) {
+    font: inherit; font-size: 13px;
+    padding: 8px 18px;
+    border-radius: 9px;
+    border: 1px solid var(--border);
+    background: var(--bg-soft);
+    color: var(--text-deep);
+    cursor: pointer;
+    transition: border-color var(--t) var(--ease), background var(--t) var(--ease),
+                color var(--t) var(--ease), transform var(--t) var(--ease);
+  }
+  .tool :global(.btn:hover) {
+    border-color: var(--primary);
+    color: var(--primary-dark);
+    transform: translateY(-1px);
+  }
+  .tool :global(.btn.primary) {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+  }
+  .tool :global(.btn.primary:hover) {
+    background: var(--primary-dark);
+    border-color: var(--primary-dark);
+    color: #fff;
+  }
+  .tool :global(.out) {
+    font-family: var(--mono); font-size: 12.5px; line-height: 1.75;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 13px 15px;
+    white-space: pre-wrap;
+    word-break: break-all;
+    color: var(--text-deep);
+  }
+  .tool :global(.out:empty)::before {
+    content: '结果会显示在这里';
+    color: var(--text-muted);
+  }
+  .tool :global(.err) { color: #d64545; }
+  .tool :global(.kv) { display: flex; gap: 8px; align-items: baseline; }
+  .tool :global(.kv b) {
+    font-weight: 400; color: var(--text-muted);
+    font-size: 12px; min-width: 86px; flex: 0 0 auto;
+  }
+  .tool :global(.kv span) { font-family: var(--mono); font-size: 13px; color: var(--text-deep); }
+  .tool :global(.divider) {
+    height: 1px; margin: 20px 0;
+    background: linear-gradient(90deg, transparent, var(--divider), transparent);
+  }
+</style>

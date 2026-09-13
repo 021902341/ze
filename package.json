@@ -11,14 +11,16 @@
     "start": "astro dev",
     "prebuild": "npm run fonts",
     "build": "astro build",
+    "postbuild": "pagefind --site dist",
     "preview": "astro preview",
     "check": "astro check"
   },
   "dependencies": {
-    "astro": "^7.3.2",
-    "@astrojs/sitemap": "^3.7.4"
+    "@astrojs/sitemap": "^3.7.4",
+    "astro": "^7.3.2"
   },
   "devDependencies": {
-    "lxgw-wenkai-screen-webfont": "^1.7.0"
+    "lxgw-wenkai-screen-webfont": "^1.7.0",
+    "pagefind": "^1.5.2"
   }
 }

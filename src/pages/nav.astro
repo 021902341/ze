@@ -1,0 +1,99 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { NAV_BOOKMARKS } from '../data/nav';
+
+const total = NAV_BOOKMARKS.reduce((n, g) => n + g.items.length, 0);
+---
+
+<BaseLayout title="导航收藏 · ze" description={`常用站点收藏夹，${total} 个精选链接`}>
+  <main class="wrap" data-pagefind-body>
+    <header class="ph-head">
+      <h1 class="page-title">导航收藏</h1>
+      <p class="page-sub">自己高频在用的 {total} 个站点，按用途分了 {NAV_BOOKMARKS.length} 组。</p>
+    </header>
+
+    {NAV_BOOKMARKS.map((g) => (
+      <section class="grp">
+        <div class="sec-head">
+          <h2>{g.group}</h2>
+          <span class="rule dash"></span>
+          <span class="cnt">{g.items.length}</span>
+        </div>
+        <div class="grid">
+          {g.items.map((it) => (
+            <a class="bm glass glass-hover" href={it.href} target="_blank" rel="noopener">
+              <span class="badge" style={`--bc:${it.color}`} aria-hidden="true">
+                {it.name.charAt(0)}
+              </span>
+              <span class="tx">
+                <span class="nm">{it.name}</span>
+                <span class="ds">{it.desc}</span>
+              </span>
+            </a>
+          ))}
+        </div>
+      </section>
+    ))}
+  </main>
+</BaseLayout>
+
+<style>
+  .wrap {
+    max-width: var(--content-w);
+    margin: 0 auto;
+    padding: 40px var(--shell-pad) 64px;
+  }
+  .ph-head { margin-bottom: 34px; }
+  .ph-head .page-sub { margin-top: 8px; }
+
+  .grp { margin-bottom: 34px; }
+  .cnt {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(272px, 1fr));
+    gap: 13px;
+  }
+
+  .bm {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 15px 17px;
+    text-decoration: none;
+    border-radius: var(--glass-radius);
+  }
+
+  .badge {
+    width: 38px;
+    height: 38px;
+    flex: 0 0 auto;
+    border-radius: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    color: #fff;
+    background: var(--bc, var(--primary));
+    box-shadow: 0 3px 10px color-mix(in srgb, var(--bc, var(--primary)) 40%, transparent);
+  }
+
+  .tx { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .nm {
+    font-size: 14.5px;
+    color: var(--text-deep);
+    transition: color var(--t) var(--ease);
+  }
+  .bm:hover .nm { color: var(--primary-dark); }
+  .ds {
+    font-size: 12px;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+</style>

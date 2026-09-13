@@ -49,6 +49,8 @@ export const NAV = [
   { href: '/blog/', label: '文章', shape: 'doc', iconColor: '#f03e3e' },
   { href: '/blog/categories/', label: '分类', shape: 'flower', iconColor: '#ff6b6b' },
   { href: '/blog/tags/', label: '标签', shape: 'bell', iconColor: '#ff922b' },
+  { href: '/nav/', label: '收藏', shape: 'star', iconColor: '#ffa94d' },
+  { href: '/tools/', label: '工具', shape: 'dia', iconColor: '#ffc078' },
   { href: '/reference-ranking.html', label: '榜单', shape: 'link', iconColor: '#fab005' },
   { href: '/about/', label: '关于', shape: 'info', iconColor: '#fcc419' },
 ] as const;
@@ -68,9 +70,9 @@ export const SOCIALS = [
   { href: '/rss.xml', label: 'RSS', short: 'RSS' },
 ] as const;
 
-/** 侧栏「快捷入口」—— 模块做好后把 soon 去掉 */
+/** 侧栏「快捷入口」 */
 export const QUICK_LINKS = [
-  { href: '/nav/', label: '导航收藏', soon: true },
-  { href: '/tools/', label: '在线工具', soon: true },
+  { href: '/nav/', label: '导航收藏', note: '25 →' },
+  { href: '/tools/', label: '在线工具', note: '4 个 →' },
   { href: '/reference-ranking.html', label: '建站选型榜单', note: '82 →' },
 ] as const;

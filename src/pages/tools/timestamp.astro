@@ -1,0 +1,80 @@
+---
+import ToolShell from '../../layouts/ToolShell.astro';
+---
+
+<ToolShell title="时间戳转换" desc="Unix 秒/毫秒时间戳与日期时间互转，顶部是实时当前时间。">
+  <div class="now">
+    <div class="kv"><b>当前时间</b><span id="now-text">—</span></div>
+    <div class="kv"><b>秒时间戳</b><span id="now-s">—</span></div>
+    <div class="kv"><b>毫秒时间戳</b><span id="now-ms">—</span></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="fld">
+    <label for="ts-in">时间戳 → 日期（自动识别秒/毫秒）</label>
+    <div class="row">
+      <input id="ts-in" type="text" inputmode="numeric" placeholder="例如 1757808000 或 1757808000000" style="flex:1;min-width:220px" />
+      <button class="btn primary" id="ts-go" type="button">转换</button>
+      <button class="btn" id="ts-now" type="button">填入当前</button>
+    </div>
+  </div>
+  <div class="out" id="ts-out"></div>
+
+  <div class="divider"></div>
+
+  <div class="fld">
+    <label for="dt-in">日期 → 时间戳</label>
+    <div class="row">
+      <input id="dt-in" type="datetime-local" step="1" style="flex:1;min-width:220px" />
+      <button class="btn primary" id="dt-go" type="button">转换</button>
+    </div>
+  </div>
+  <div class="out" id="dt-out"></div>
+</ToolShell>
+
+<script>
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const fmt = (d: Date) =>
+    `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+
+  // 实时当前时间
+  const nowText = document.getElementById('now-text')!;
+  const nowS = document.getElementById('now-s')!;
+  const nowMs = document.getElementById('now-ms')!;
+  const tick = () => {
+    const t = Date.now();
+    nowText.textContent = fmt(new Date(t));
+    nowS.textContent = String(Math.floor(t / 1000));
+    nowMs.textContent = String(t);
+  };
+  tick();
+  setInterval(tick, 1000);
+
+  // 时间戳 → 日期
+  const tsIn = document.getElementById('ts-in') as HTMLInputElement;
+  const tsOut = document.getElementById('ts-out')!;
+  document.getElementById('ts-go')!.addEventListener('click', () => {
+    const raw = tsIn.value.trim();
+    if (!/^\d{1,17}$/.test(raw)) { tsOut.innerHTML = '<span class="err">请输入纯数字时间戳</span>'; return; }
+    const n = Number(raw);
+    const ms = raw.length >= 13 ? n : n * 1000; // 13 位以上按毫秒
+    const d = new Date(ms);
+    if (Number.isNaN(d.getTime())) { tsOut.innerHTML = '<span class="err">时间戳超出可表示范围</span>'; return; }
+    tsOut.textContent = `${fmt(d)}\n（按${raw.length >= 13 ? '毫秒' : '秒'}解析）`;
+  });
+  document.getElementById('ts-now')!.addEventListener('click', () => {
+    tsIn.value = String(Math.floor(Date.now() / 1000));
+    document.getElementById('ts-go')!.dispatchEvent(new Event('click'));
+  });
+
+  // 日期 → 时间戳
+  const dtIn = document.getElementById('dt-in') as HTMLInputElement;
+  const dtOut = document.getElementById('dt-out')!;
+  document.getElementById('dt-go')!.addEventListener('click', () => {
+    if (!dtIn.value) { dtOut.innerHTML = '<span class="err">请先选择日期时间</span>'; return; }
+    const t = new Date(dtIn.value).getTime();
+    if (Number.isNaN(t)) { dtOut.innerHTML = '<span class="err">日期格式无法解析</span>'; return; }
+    dtOut.textContent = `秒：${Math.floor(t / 1000)}\n毫秒：${t}`;
+  });
+</script>

@@ -1,0 +1,79 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const TOOLS = [
+  { href: '/tools/timestamp/', name: '时间戳转换', desc: 'Unix 秒/毫秒 ↔ 日期时间互转，实时当前时间', icon: '时', color: '#ff922b' },
+  { href: '/tools/color/', name: '颜色转换', desc: 'HEX / RGB / HSL 互转，品牌色板一键复制', icon: '色', color: '#DF9193' },
+  { href: '/tools/json/', name: 'JSON 工具', desc: '格式化 / 压缩 / 校验，错误行列定位', icon: '{}', color: '#fab005' },
+  { href: '/tools/base64/', name: 'Base64 编解码', desc: '文本与 Base64 互转，UTF-8 中文安全', icon: '64', color: '#74c0fc' },
+] as const;
+---
+
+<BaseLayout title="在线工具 · ze" description="纯前端小工具箱：时间戳、颜色、JSON、Base64">
+  <main class="wrap" data-pagefind-body>
+    <header class="ph-head">
+      <h1 class="page-title">在线工具</h1>
+      <p class="page-sub">纯浏览器本地运行的小工具，不联网、不上传，用完即走。</p>
+    </header>
+
+    <div class="grid">
+      {TOOLS.map((t) => (
+        <a class="tl glass glass-hover" href={t.href}>
+          <span class="badge" style={`--bc:${t.color}`} aria-hidden="true">{t.icon}</span>
+          <span class="tx">
+            <span class="nm">{t.name}</span>
+            <span class="ds">{t.desc}</span>
+          </span>
+          <span class="go" aria-hidden="true">→</span>
+        </a>
+      ))}
+    </div>
+
+    <p class="note">工具会持续增加，有好点子欢迎到「关于」页留邮箱告诉我。</p>
+  </main>
+</BaseLayout>
+
+<style>
+  .wrap {
+    max-width: var(--content-w);
+    margin: 0 auto;
+    padding: 40px var(--shell-pad) 64px;
+  }
+  .ph-head { margin-bottom: 30px; }
+  .ph-head .page-sub { margin-top: 8px; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 13px;
+  }
+  .tl {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 20px;
+    text-decoration: none;
+    border-radius: var(--glass-radius);
+  }
+  .badge {
+    width: 40px; height: 40px; flex: 0 0 auto;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; color: #fff;
+    background: var(--bc, var(--primary));
+    box-shadow: 0 3px 10px color-mix(in srgb, var(--bc, var(--primary)) 40%, transparent);
+  }
+  .tx { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+  .nm { font-size: 15px; color: var(--text-deep); transition: color var(--t) var(--ease); }
+  .tl:hover .nm { color: var(--primary-dark); }
+  .ds { font-size: 12px; color: var(--text-muted); }
+  .go { margin-left: auto; color: var(--text-muted); transition: color var(--t) var(--ease), transform var(--t) var(--ease); }
+  .tl:hover .go { color: var(--primary); transform: translateX(3px); }
+
+  .note {
+    margin-top: 26px;
+    font-size: 12.5px;
+    color: var(--text-muted);
+    text-align: center;
+  }
+</style>

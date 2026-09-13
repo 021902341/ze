@@ -1,0 +1,90 @@
+---
+import ToolShell from '../../layouts/ToolShell.astro';
+---
+
+<ToolShell title="Base64 编解码" desc="文本与 Base64 互转，中文等 UTF-8 字符安全处理。">
+  <div class="fld">
+    <label for="b-src">原文</label>
+    <textarea id="b-src" placeholder="输入要编码的文本，支持中文" spellcheck="false"></textarea>
+  </div>
+
+  <div class="row" style="margin-bottom:16px">
+    <button class="btn primary" id="b-enc" type="button">编码 ↓</button>
+    <button class="btn" id="b-dec" type="button">↑ 解码</button>
+    <button class="btn" id="b-copy" type="button">复制结果</button>
+    <button class="btn" id="b-swap" type="button">结果回填原文</button>
+  </div>
+
+  <div class="fld">
+    <label>结果</label>
+    <div class="out" id="b-out" style="min-height:110px"></div>
+  </div>
+
+  <div class="copied" id="copied" aria-live="polite"></div>
+</ToolShell>
+
+<style>
+  .copied {
+    position: fixed; left: 50%; bottom: 34px; transform: translateX(-50%) translateY(10px);
+    background: var(--text-deep); color: var(--bg);
+    font-size: 12.5px; padding: 7px 16px; border-radius: 9px;
+    opacity: 0; pointer-events: none;
+    transition: opacity .25s var(--ease), transform .25s var(--ease);
+    z-index: 300;
+  }
+  .copied.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+
+<script>
+  const src = document.getElementById('b-src') as HTMLTextAreaElement;
+  const out = document.getElementById('b-out')!;
+  const copied = document.getElementById('copied')!;
+  let toastT = 0;
+  const toast = (text: string) => {
+    copied.textContent = text;
+    copied.classList.add('show');
+    clearTimeout(toastT);
+    toastT = setTimeout(() => copied.classList.remove('show'), 1600);
+  };
+
+  /** UTF-8 安全的 btoa/atob（原生 API 只认 Latin-1） */
+  const enc = (s: string): string => {
+    const bytes = new TextEncoder().encode(s);
+    let bin = '';
+    for (let i = 0; i < bytes.length; i += 0x4000) {
+      bin += String.fromCharCode(...bytes.subarray(i, i + 0x4000));
+    }
+    return btoa(bin);
+  };
+  const dec = (s: string): string => {
+    const bin = atob(s.replace(/\s+/g, ''));
+    const bytes = Uint8Array.from(bin, (c) => c.charCodeAt(0));
+    return new TextDecoder().decode(bytes);
+  };
+
+  document.getElementById('b-enc')!.addEventListener('click', () => {
+    const v = src.value;
+    if (!v) { out.innerHTML = '<span class="err">先输入要编码的文本</span>'; return; }
+    try { out.textContent = enc(v); }
+    catch (e) { out.innerHTML = `<span class="err">编码失败：${(e as Error).message}</span>`; }
+  });
+  document.getElementById('b-dec')!.addEventListener('click', () => {
+    const v = src.value.trim();
+    if (!v) { out.innerHTML = '<span class="err">先粘贴要解码的 Base64</span>'; return; }
+    try { out.textContent = dec(v); }
+    catch { out.innerHTML = '<span class="err">不是合法的 Base64 内容</span>'; }
+  });
+  document.getElementById('b-copy')!.addEventListener('click', async () => {
+    const t = out.textContent || '';
+    if (!t) { toast('没有可复制的内容'); return; }
+    try { await navigator.clipboard.writeText(t); toast('结果已复制'); }
+    catch { toast('复制失败，请手动选择'); }
+  });
+  document.getElementById('b-swap')!.addEventListener('click', () => {
+    const t = out.textContent || '';
+    if (!t) { toast('结果区还是空的'); return; }
+    src.value = t;
+    out.textContent = '';
+    toast('已回填到原文框');
+  });
+</script>

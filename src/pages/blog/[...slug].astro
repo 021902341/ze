@@ -44,7 +44,7 @@ const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
       <a href={categoryHref(data.category)}>{data.category}</a>
     </nav>
 
-    <article>
+    <article data-pagefind-body>
       <header class="head">
         <div class="tax">
           <a class="folder" href={categoryHref(data.category)}>

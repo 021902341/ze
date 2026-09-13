@@ -1,0 +1,95 @@
+---
+import ToolShell from '../../layouts/ToolShell.astro';
+---
+
+<ToolShell title="JSON 工具" desc="格式化、压缩、校验，解析失败时给出行列号定位。">
+  <div class="fld">
+    <label for="j-in">输入 JSON</label>
+    <textarea id="j-in" placeholder='{"name":"ze","tags":["博客","工具"]}' spellcheck="false"></textarea>
+  </div>
+
+  <div class="row" style="margin-bottom:16px">
+    <button class="btn primary" id="j-fmt" type="button">格式化</button>
+    <button class="btn" id="j-min" type="button">压缩</button>
+    <button class="btn" id="j-check" type="button">仅校验</button>
+    <button class="btn" id="j-copy" type="button">复制结果</button>
+    <button class="btn" id="j-clear" type="button">清空</button>
+  </div>
+
+  <div class="fld">
+    <label>结果</label>
+    <div class="out" id="j-out" style="min-height:120px"></div>
+  </div>
+
+  <div class="copied" id="copied" aria-live="polite"></div>
+</ToolShell>
+
+<style>
+  .copied {
+    position: fixed; left: 50%; bottom: 34px; transform: translateX(-50%) translateY(10px);
+    background: var(--text-deep); color: var(--bg);
+    font-size: 12.5px; padding: 7px 16px; border-radius: 9px;
+    opacity: 0; pointer-events: none;
+    transition: opacity .25s var(--ease), transform .25s var(--ease);
+    z-index: 300;
+  }
+  .copied.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+
+<script>
+  const jIn = document.getElementById('j-in') as HTMLTextAreaElement;
+  const jOut = document.getElementById('j-out')!;
+  const copied = document.getElementById('copied')!;
+  let toastT = 0;
+  const toast = (text: string) => {
+    copied.textContent = text;
+    copied.classList.add('show');
+    clearTimeout(toastT);
+    toastT = setTimeout(() => copied.classList.remove('show'), 1600);
+  };
+
+  /** 从 V8 的错误消息里尽量提取位置，换算成行列 */
+  const locate = (src: string, e: Error): string => {
+    const m = /position (\d+)/i.exec(e.message);
+    if (!m) return e.message;
+    const pos = Number(m[1]);
+    const upto = src.slice(0, pos);
+    const line = upto.split('\n').length;
+    const col = pos - (upto.lastIndexOf('\n') + 1) + 1;
+    return `${e.message}\n→ 第 ${line} 行，第 ${col} 列附近`;
+  };
+
+  const parse = (): { ok: boolean; value?: unknown; err?: string } => {
+    const src = jIn.value.trim();
+    if (!src) return { ok: false, err: '先粘贴一段 JSON 再操作' };
+    try { return { ok: true, value: JSON.parse(src) }; }
+    catch (e) { return { ok: false, err: locate(src, e as Error) }; }
+  };
+
+  document.getElementById('j-fmt')!.addEventListener('click', () => {
+    const r = parse();
+    jOut.innerHTML = r.ok ? '' : '';
+    if (r.ok) jOut.textContent = JSON.stringify(r.value, null, 2);
+    else jOut.innerHTML = `<span class="err">${r.err}</span>`;
+  });
+  document.getElementById('j-min')!.addEventListener('click', () => {
+    const r = parse();
+    if (r.ok) jOut.textContent = JSON.stringify(r.value);
+    else jOut.innerHTML = `<span class="err">${r.err}</span>`;
+  });
+  document.getElementById('j-check')!.addEventListener('click', () => {
+    const r = parse();
+    jOut.innerHTML = r.ok
+      ? '<span style="color:var(--c-date)">✓ JSON 合法</span>'
+      : `<span class="err">✗ ${r.err}</span>`;
+  });
+  document.getElementById('j-copy')!.addEventListener('click', async () => {
+    const t = jOut.textContent || '';
+    if (!t) { toast('没有可复制的内容'); return; }
+    try { await navigator.clipboard.writeText(t); toast('结果已复制'); }
+    catch { toast('复制失败，请手动选择'); }
+  });
+  document.getElementById('j-clear')!.addEventListener('click', () => {
+    jIn.value = ''; jOut.textContent = ''; jIn.focus();
+  });
+</script>

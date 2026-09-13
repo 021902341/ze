@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import SiteHeader from '../components/SiteHeader.astro';
 import FxLayer from '../components/FxLayer.astro';
+import SearchBox from '../components/SearchBox.astro';
 import { SITE } from '../data/site';
 
 interface Props {
@@ -87,5 +88,6 @@ const jsonLd = {
     <SiteHeader />
     <slot />
     <FxLayer />
+    <SearchBox />
   </body>
 </html>
