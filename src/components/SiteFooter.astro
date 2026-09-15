@@ -1,0 +1,59 @@
+---
+import { SITE, SOCIALS } from '../data/site';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-foot">
+  <div class="in">
+    <p class="l">
+      © {year} {SITE.author} · {SITE.title.replace(' · ', ' / ')}
+    </p>
+    <nav class="r" aria-label="站点链接">
+      {SOCIALS.map((s) => (
+        <a href={s.href} target={s.href.startsWith('http') ? '_blank' : undefined}
+           rel={s.href.startsWith('http') ? 'noopener' : undefined}>{s.label}</a>
+      ))}
+      <span class="pow">Powered by Astro</span>
+    </nav>
+  </div>
+</footer>
+
+<style>
+  .site-foot {
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+  .in {
+    max-width: var(--content-w);
+    margin: 0 auto;
+    padding: 22px var(--shell-pad) 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .l {
+    font-size: 12.5px;
+    color: var(--text-muted);
+  }
+  .r {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 12.5px;
+  }
+  .r a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color var(--t) var(--ease);
+  }
+  .r a:hover { color: var(--primary-dark); }
+  .pow {
+    color: color-mix(in srgb, var(--text-muted) 70%, transparent);
+  }
+  @media (max-width: 640px) {
+    .in { flex-direction: column; align-items: flex-start; gap: 10px; }
+  }
+</style>

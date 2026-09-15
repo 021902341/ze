@@ -108,6 +108,11 @@ img { max-width: 100%; height: auto; }
 a { color: inherit; }
 button { font: inherit; color: inherit; }
 
+/* 标题平衡换行（现代浏览器生效，旧浏览器自动忽略）：
+   避免末行只剩一两个字，段落避免孤行 */
+h1, h2, h3, .page-title, .hero-title, .sec-head h2 { text-wrap: balance; }
+.prose p, .prose li { text-wrap: pretty; }
+
 ::selection { background: color-mix(in srgb, var(--primary) 30%, transparent); }
 
 /* 键盘焦点：主色环，比浏览器默认更贴品牌（自定义光标隐藏原生光标后尤其需要） */
@@ -538,4 +543,67 @@ html {
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   * { transition-duration: .01ms !important; }
+}
+
+/* ============================================================
+   打印样式：只留正文，黑字白底
+   ============================================================ */
+@media print {
+  :root,
+  html.dark {
+    --bg: #fff;
+    --bg-soft: #fff;
+    --text: #000;
+    --text-deep: #000;
+    --text-muted: #555;
+    --border: #ccc;
+    --divider: #ddd;
+  }
+
+  /* 装饰与交互件全部隐去 */
+  body::before,
+  .navbar,
+  .site-foot,
+  #fx-petals,
+  .fx-cursor-dot,
+  .fx-cursor-ring,
+  .to-top,
+  .read-bar,
+  .search-layer,
+  .skip-link,
+  .code-copy,
+  .rail,
+  .status {
+    display: none !important;
+  }
+
+  .glass {
+    background: none;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .wrap, .work, .tool { max-width: none !important; padding: 0 !important; }
+
+  /* 正文：黑字、断开标题分页、链接补出 URL */
+  .prose { font-size: 11.5pt; line-height: 1.7; color: #000; }
+  .prose a { color: #000; border-bottom: none; }
+  .prose a::after {
+    content: " (" attr(href) ")";
+    font-size: .82em;
+    color: #555;
+    word-break: break-all;
+  }
+  .prose a[href^="#"]::after { content: none; }
+
+  .prose h1, .prose h2, .prose h3, .prose h4 { break-after: avoid; page-break-after: avoid; }
+  .prose img, .prose pre, .prose blockquote, .prose table { break-inside: avoid; page-break-inside: avoid; }
+  .prose pre {
+    background: #f7f7f7;
+    border: 1px solid #ccc;
+    font-size: 10pt;
+  }
+  .prose blockquote { background: none; border-left: 3px solid #999; }
 }

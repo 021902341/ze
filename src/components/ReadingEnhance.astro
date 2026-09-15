@@ -1,0 +1,213 @@
+---
+/**
+ * 阅读增强层（全站生效，按页面元素存在与否自动启用）：
+ *   · 跳转链接（键盘用户跳过导航直达正文）
+ *   · 阅读进度条（文章页顶部细线，随滚动推进）
+ *   · 回到顶部按钮（滚动 600px 后浮现）
+ *   · 代码块复制按钮（悬停在代码块上时出现在右上角）
+ * 兼容 View Transitions：用 astro:page-load 重新初始化，每次先清理上次绑定。
+ */
+---
+
+<a class="skip-link" href="#main">跳到正文</a>
+
+<div class="read-bar" id="read-bar" aria-hidden="true"><i></i></div>
+
+<button class="to-top" id="to-top" type="button" aria-label="回到顶部" title="回到顶部">
+  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
+       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M12 19V5M5 12l7-7 7 7"/>
+  </svg>
+</button>
+
+<style is:global>
+  /* ---------- 跳转链接 ---------- */
+  .skip-link {
+    position: fixed;
+    left: 50%;
+    top: 10px;
+    transform: translate(-50%, -180%);
+    z-index: 400;
+    padding: 8px 18px;
+    border-radius: 9px;
+    background: var(--text-deep);
+    color: var(--bg);
+    font-size: 13px;
+    text-decoration: none;
+    transition: transform .22s var(--ease);
+  }
+  .skip-link:focus { transform: translate(-50%, 0); }
+
+  /* ---------- 阅读进度条 ---------- */
+  .read-bar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 2.5px;
+    z-index: 60;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--t) var(--ease);
+  }
+  .read-bar.on { opacity: 1; }
+  .read-bar i {
+    display: block;
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg,
+      var(--primary), color-mix(in srgb, var(--pin) 80%, var(--primary)));
+    border-radius: 0 2px 2px 0;
+    transition: width .1s linear;
+  }
+
+  /* ---------- 回到顶部 ---------- */
+  .to-top {
+    position: fixed;
+    right: 24px;
+    bottom: 26px;
+    z-index: 120;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    color: var(--text);
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: opacity var(--t) var(--ease), transform var(--t) var(--ease),
+                visibility var(--t), color var(--t) var(--ease),
+                border-color var(--t) var(--ease);
+  }
+  .to-top.on {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+  }
+  .to-top:hover {
+    color: var(--primary-dark);
+    border-color: color-mix(in srgb, var(--primary) 45%, var(--glass-border));
+  }
+
+  /* ---------- 代码块复制按钮 ---------- */
+  .prose pre { position: relative; }
+  .code-copy {
+    position: absolute;
+    top: 9px;
+    right: 10px;
+    font: inherit;
+    font-size: 11.5px;
+    padding: 3px 10px;
+    border-radius: 7px;
+    border: 1px solid var(--border);
+    background: var(--glass-bg-strong);
+    color: var(--text-muted);
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity var(--t) var(--ease), color var(--t) var(--ease),
+                border-color var(--t) var(--ease);
+  }
+  .prose pre:hover .code-copy,
+  .code-copy:focus-visible { opacity: 1; }
+  .code-copy:hover {
+    color: var(--primary-dark);
+    border-color: color-mix(in srgb, var(--primary) 45%, transparent);
+  }
+  /* 触屏没有 hover，直接常驻 */
+  @media (hover: none) {
+    .code-copy { opacity: 1; }
+  }
+</style>
+
+<script>
+  let cleanup: (() => void) | null = null;
+
+  function init() {
+    const offs: (() => void)[] = [];
+
+    /* 1. 跳转链接目标：给主内容区补 id="main" */
+    if (!document.getElementById('main')) {
+      const main = document.querySelector('main, #content, .wrap');
+      if (main) main.id = 'main';
+    }
+
+    /* 2. 阅读进度条 */
+    const bar = document.getElementById('read-bar') as HTMLElement | null;
+    const barFill = bar?.querySelector('i') as HTMLElement | null;
+    const prose = document.querySelector('.prose');
+
+    /* 3. 回到顶部 */
+    const top = document.getElementById('to-top') as HTMLButtonElement | null;
+    const onTop = () => {
+      scrollTo({ top: 0, behavior: 'smooth' });
+      (document.querySelector('.skip-link') as HTMLElement | null)?.blur();
+    };
+    top?.addEventListener('click', onTop);
+    offs.push(() => top?.removeEventListener('click', onTop));
+
+    /* 4. 代码块复制 */
+    document.querySelectorAll<HTMLPreElement>('.prose pre').forEach((pre) => {
+      if (pre.dataset.copyReady) return;
+      pre.dataset.copyReady = '1';
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'code-copy';
+      btn.textContent = '复制';
+      const onClick = async () => {
+        const code = pre.querySelector('code')?.textContent ?? pre.textContent ?? '';
+        try {
+          await navigator.clipboard.writeText(code);
+          btn.textContent = '已复制';
+        } catch {
+          btn.textContent = '复制失败';
+        }
+        setTimeout(() => { btn.textContent = '复制'; }, 1500);
+      };
+      btn.addEventListener('click', onClick);
+      pre.appendChild(btn);
+    });
+
+    /* 滚动驱动：进度条 + 回顶按钮（rAF 节流） */
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const y = scrollY;
+      top?.classList.toggle('on', y > 600);
+
+      if (bar && barFill && prose) {
+        const r = prose.getBoundingClientRect();
+        const start = r.top + y - innerHeight * 0.5;
+        const total = r.height;
+        const p = total > 0 ? Math.min(1, Math.max(0, (y - start) / total)) : 0;
+        bar.classList.add('on');
+        barFill.style.width = (p * 100).toFixed(2) + '%';
+        if (p >= 1) bar.classList.remove('on'); // 读到底后淡出，不干扰页脚
+      }
+    };
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
+    addEventListener('scroll', onScroll, { passive: true });
+    addEventListener('resize', onScroll, { passive: true });
+    offs.push(() => {
+      removeEventListener('scroll', onScroll);
+      removeEventListener('resize', onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    });
+    update();
+
+    return () => offs.forEach((fn) => fn());
+  }
+
+  // astro:page-load 在首次加载与每次客户端导航后都会触发
+  document.addEventListener('astro:page-load', () => {
+    cleanup?.();
+    cleanup = init();
+  });
+</script>

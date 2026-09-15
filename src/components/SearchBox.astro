@@ -4,6 +4,9 @@
  * 触发：导航栏搜索按钮 / Cmd(Ctrl)+K；Esc 或点遮罩关闭。
  * 索引进程：postbuild 跑 `pagefind --site dist`，产物在 /pagefind/。
  * 开发模式（无索引）会显示友好提示，不影响其他功能。
+ *
+ * 兼容 View Transitions：弹层 DOM 不持久化，改由 astro:page-load
+ * 重新取元素并绑定（按钮在持久化的导航栏里，用 dataset 标记防重复绑定）。
  */
 ---
 
@@ -103,13 +106,14 @@
 </style>
 
 <script>
-  const layer = document.getElementById('search-layer')!;
-  const input = document.getElementById('search-input') as HTMLInputElement;
-  const box = document.getElementById('search-results')!;
+  /** 每次都取最新 DOM —— View Transitions 会替换弹层节点 */
+  const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T | null;
+
   let pf: any = null;
   let pfFailed = false;
   let items: { url: string; el: HTMLAnchorElement }[] = [];
   let active = -1;
+  let seq = 0;
 
   async function ensurePagefind() {
     if (pf || pfFailed) return;
@@ -122,6 +126,10 @@
   }
 
   function open() {
+    const layer = $('search-layer');
+    const input = $<HTMLInputElement>('search-input');
+    const box = $('search-results');
+    if (!layer || !input || !box) return;
     layer.hidden = false;
     document.body.style.overflow = 'hidden';
     input.value = '';
@@ -129,15 +137,18 @@
     setTimeout(() => input.focus(), 30);
     ensurePagefind().then(() => {
       if (pfFailed) {
-        box.innerHTML = '<div class="msg">开发模式下没有搜索索引。<br>执行 <code>npm run build</code> 后会自动生成。</div>';
+        box.innerHTML =
+          '<div class="msg">开发模式下没有搜索索引。<br>执行 <code>npm run build</code> 后会自动生成。</div>';
       }
     });
   }
 
   function close() {
+    const layer = $('search-layer');
+    if (!layer) return;
     layer.hidden = true;
     document.body.style.overflow = '';
-    (document.getElementById('search-open') as HTMLElement | null)?.focus?.();
+    $('search-open')?.focus?.();
   }
 
   function setActive(i: number) {
@@ -147,6 +158,8 @@
   }
 
   function render(rows: { url: string; title: string; excerpt: string }[], msg?: string) {
+    const box = $('search-results');
+    if (!box) return;
     items = []; active = -1;
     if (msg) { box.innerHTML = `<div class="msg">${msg}</div>`; return; }
     if (!rows.length) { box.innerHTML = ''; return; }
@@ -162,44 +175,69 @@
     }
   }
 
-  let seq = 0;
-  input.addEventListener('input', async () => {
-    const q = input.value.trim();
-    if (!q) { render([]); return; }
-    if (pfFailed || !pf) { return; }
+  async function search(q: string) {
+    const box = $('search-results');
+    if (pfFailed || !pf || !box) return;
     const my = ++seq;
     const res = await pf.debouncedSearch(q, {}, 200);
-    if (my !== seq) return;          // 已有更新的搜索
-    if (!res) return;                // 被去抖取消
+    if (my !== seq || !res) return; // 已被更新的搜索取代 / 被去抖取消
     if (!res.results.length) { render([], `没有找到「${q}」相关的内容`); return; }
     const rows = await Promise.all(
       res.results.slice(0, 8).map(async (r: any) => {
         const d = await r.data();
-        return {
-          url: d.url,
-          title: d.meta?.title ?? d.url,
-          excerpt: d.excerpt ?? '',
-        };
+        return { url: d.url, title: d.meta?.title ?? d.url, excerpt: d.excerpt ?? '' };
       })
     );
     if (my === seq) render(rows);
-  });
+  }
 
-  input.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowDown') { e.preventDefault(); setActive(Math.min(items.length - 1, active + 1)); }
-    else if (e.key === 'ArrowUp') { e.preventDefault(); setActive(Math.max(0, active - 1)); }
-    else if (e.key === 'Enter' && active >= 0) { location.href = items[active].url; }
-  });
-
-  document.getElementById('search-open')?.addEventListener('click', open);
-  layer.querySelector('[data-close]')?.addEventListener('click', close);
-
+  /** 全局快捷键：与页面无关，模块只执行一次 */
   addEventListener('keydown', (e) => {
+    const layer = $('search-layer');
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
       e.preventDefault();
-      layer.hidden ? open() : close();
-    } else if (e.key === 'Escape' && !layer.hidden) {
+      if (!layer) return;
+      if (layer.hidden) open(); else close();
+    } else if (e.key === 'Escape' && layer && !layer.hidden) {
       close();
     }
   });
+
+  /** 每次页面加载/客户端导航后重新绑定（按钮在持久化的导航里，用标记防重复） */
+  function bind() {
+    const btn = $('search-open');
+    if (btn && !btn.dataset.searchBound) {
+      btn.dataset.searchBound = '1';
+      btn.addEventListener('click', open);
+    }
+
+    const input = $<HTMLInputElement>('search-input');
+    if (input && !input.dataset.searchBound) {
+      input.dataset.searchBound = '1';
+      input.addEventListener('input', () => {
+        const q = input.value.trim();
+        if (!q) { render([]); return; }
+        search(q);
+      });
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowDown') { e.preventDefault(); setActive(Math.min(items.length - 1, active + 1)); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); setActive(Math.max(0, active - 1)); }
+        else if (e.key === 'Enter' && active >= 0) { location.href = items[active].url; }
+      });
+    }
+
+    const layer = $('search-layer');
+    const back = layer?.querySelector('[data-close]') as HTMLElement | null;
+    if (back && !back.dataset.searchBound) {
+      back.dataset.searchBound = '1';
+      back.addEventListener('click', close);
+    }
+  }
+
+  document.addEventListener('astro:page-load', bind);
+
+  // 兜底：即使没有 View Transitions（astro:page-load 不触发）也能工作。
+  // bind 内部用 dataset 标记，重复调用安全。
+  if (document.readyState !== 'loading') bind();
+  else document.addEventListener('DOMContentLoaded', bind);
 </script>

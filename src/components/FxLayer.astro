@@ -11,9 +11,9 @@ import { SITE } from '../data/site';
 const { cursor: fxCursor, particles: fxParticles } = SITE.fx;
 ---
 
-{fxParticles && <canvas id="fx-petals" aria-hidden="true"></canvas>}
-{fxCursor && <div class="fx-cursor-dot" aria-hidden="true"></div>}
-{fxCursor && <div class="fx-cursor-ring" aria-hidden="true"></div>}
+{fxParticles && <canvas id="fx-petals" aria-hidden="true" transition:persist></canvas>}
+{fxCursor && <div class="fx-cursor-dot" id="fx-cursor-dot" aria-hidden="true" transition:persist></div>}
+{fxCursor && <div class="fx-cursor-ring" id="fx-cursor-ring" aria-hidden="true" transition:persist></div>}
 
 <style is:global>
   /* ---------- 粒子画布 ---------- */

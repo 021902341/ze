@@ -1,31 +1,64 @@
 ---
 import '../styles/global.css';
 import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
 import FxLayer from '../components/FxLayer.astro';
 import SearchBox from '../components/SearchBox.astro';
+import ReadingEnhance from '../components/ReadingEnhance.astro';
+import { ClientRouter } from 'astro:transitions';
 import { SITE } from '../data/site';
 
 interface Props {
   title?: string;
   description?: string;
+  /** og:type —— 文章页传 'article' */
+  type?: 'website' | 'article';
+  /** 文章首发时间（ISO），用于 article:published_time 与结构化数据 */
+  publishedTime?: string;
+  /** 文章更新时间（ISO） */
+  updatedTime?: string;
+  /** 文章标签，用于 article:tag 与 keywords */
+  tags?: string[];
 }
 
-const { title = SITE.title, description = SITE.description } = Astro.props;
+const {
+  title = SITE.title,
+  description = SITE.description,
+  type = 'website',
+  publishedTime,
+  updatedTime,
+  tags,
+} = Astro.props;
 
 // canonical 由 SITE_URL 环境变量推导，两个站点各自生成正确的绝对地址
 const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).href;
 const ogImage = new URL(SITE.ogImage || SITE.heroImage, Astro.site ?? Astro.url.origin).href;
 const isHome = Astro.url.pathname === '/';
 
-// 结构化数据：让搜索引擎认识站点与作者
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'WebSite',
-  name: SITE.title,
-  url: Astro.site?.href,
-  inLanguage: 'zh-CN',
-  author: { '@type': 'Person', name: SITE.author },
-};
+// 结构化数据：站点信息 +（文章页）BlogPosting
+const jsonLdGraph: Record<string, unknown>[] = [
+  {
+    '@type': 'WebSite',
+    name: SITE.title,
+    url: Astro.site?.href,
+    inLanguage: 'zh-CN',
+    author: { '@type': 'Person', name: SITE.author },
+  },
+];
+if (type === 'article' && publishedTime) {
+  jsonLdGraph.push({
+    '@type': 'BlogPosting',
+    headline: title,
+    description,
+    datePublished: publishedTime,
+    ...(updatedTime ? { dateModified: updatedTime } : {}),
+    ...(tags?.length ? { keywords: tags.join(', ') } : {}),
+    author: { '@type': 'Person', name: SITE.author },
+    mainEntityOfPage: canonical,
+    inLanguage: 'zh-CN',
+  });
+}
+const jsonLd = { '@context': 'https://schema.org', '@graph': jsonLdGraph };
 ---
 
 <!doctype html>
@@ -40,11 +73,20 @@ const jsonLd = {
     <meta property="og:site_name" content={SITE.title} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={type} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content={ogImage} />
+
+    <!-- 文章页专属：发布时间 / 修改时间 / 标签 -->
+    {type === 'article' && publishedTime && (
+      <meta property="article:published_time" content={publishedTime} />
+    )}
+    {type === 'article' && updatedTime && (
+      <meta property="article:modified_time" content={updatedTime} />
+    )}
+    {type === 'article' && tags?.map((t) => <meta property="article:tag" content={t} />)}
 
     <!-- 浏览器 chrome 配色：初始值由下方内联脚本按主题即时修正 -->
     <meta name="theme-color" content="#ffffff" />
@@ -82,12 +124,17 @@ const jsonLd = {
     </script>
 
     <meta name="generator" content={Astro.generator} />
+
+    <!-- 页面转场：客户端路由 + 淡入淡出，站内跳转不再白屏重载 -->
+    <ClientRouter />
   </head>
 
   <body>
-    <SiteHeader />
+    <SiteHeader transition:persist />
     <slot />
+    <SiteFooter />
     <FxLayer />
     <SearchBox />
+    <ReadingEnhance />
   </body>
 </html>

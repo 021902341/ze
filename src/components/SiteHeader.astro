@@ -11,7 +11,7 @@ function isActive(href: string): boolean {
 }
 ---
 
-<nav class="navbar" data-pagefind-ignore>
+<nav class="navbar" data-pagefind-ignore transition:persist>
   <a class="brand" href="/">{SITE.brandPrefix}<i>-</i>{SITE.brandSuffix}</a>
 
   <div class="navlinks">
@@ -125,25 +125,50 @@ function isActive(href: string): boolean {
   :global(html.dark) .i-moon { display: none; }
 
   @media (max-width: 860px) {
-    .navbar { grid-template-columns: auto 1fr; height: auto; padding: 10px var(--shell-pad); }
+    .navbar {
+      grid-template-columns: auto 1fr;
+      height: auto;
+      padding: 9px var(--shell-pad);
+      row-gap: 2px;
+    }
+    /* 8 个栏目在窄屏不折行，改成单行横向滑动 */
     .navlinks {
       grid-column: 1 / -1;
-      justify-self: start;
-      flex-wrap: wrap;
+      justify-self: stretch;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
       gap: 2px;
+      padding-bottom: 2px;
     }
+    .navlinks::-webkit-scrollbar { display: none; }
+    .navlinks a { flex: 0 0 auto; padding: 5px 10px; font-size: 13.5px; }
     .navr { grid-row: 1; grid-column: 2; }
   }
 </style>
 
 <script>
-  const btn = document.getElementById('theme-toggle');
-  btn?.addEventListener('click', () => {
-    const dark = document.documentElement.classList.toggle('dark');
-    try {
-      localStorage.setItem('theme', dark ? 'dark' : 'light');
-    } catch (e) {
-      /* 隐私模式下 localStorage 可能不可用，忽略 */
-    }
-  });
+  /**
+   * 主题切换。导航栏是 transition:persist 的，按钮节点在客户端导航后保留，
+   * 但为稳妥仍用 dataset 标记 + astro:page-load 重绑（双保险）。
+   */
+  function bindTheme() {
+    const btn = document.getElementById('theme-toggle');
+    if (!btn || btn.dataset.themeBound) return;
+    btn.dataset.themeBound = '1';
+    btn.addEventListener('click', () => {
+      const dark = document.documentElement.classList.toggle('dark');
+      try {
+        localStorage.setItem('theme', dark ? 'dark' : 'light');
+      } catch (e) {
+        /* 隐私模式下 localStorage 可能不可用，忽略 */
+      }
+    });
+  }
+
+  document.addEventListener('astro:page-load', bindTheme);
+  if (document.readyState !== 'loading') bindTheme();
+  else document.addEventListener('DOMContentLoaded', bindTheme);
 </script>

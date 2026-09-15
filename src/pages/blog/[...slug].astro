@@ -36,7 +36,14 @@ const { Content, headings } = await render(post);
 const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
 ---
 
-<BaseLayout title={`${data.title} · ze`} description={data.description ?? data.title}>
+<BaseLayout
+  title={`${data.title} · ze`}
+  description={data.description ?? data.title}
+  type="article"
+  publishedTime={data.pubDate.toISOString()}
+  updatedTime={data.updatedDate?.toISOString()}
+  tags={[...data.tags]}
+>
   <main class="wrap">
     <nav class="crumb">
       <a href="/blog/">文章</a>
